@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RED WINTER : 왕립 벨루미아 아카데미</title>
+  <title>RED WINTER : 왕립 벨루미아 아카데미 - RPG 교류 커뮤니티</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Pretendard:wght@300;400;600;700&display=swap');
@@ -13,6 +13,7 @@
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(30, 58, 138, 0.8); border-radius: 3px; }
+    canvas { image-rendering: pixelated; }
   </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col bg-slate-950 text-slate-100">
@@ -20,22 +21,23 @@
   <!-- BGM AUDIO PLAYER -->
   <audio id="bgm-player" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=fantasy-orchestral-112893.mp3"></audio>
 
-  <!-- AUTH MODAL -->
+  <!-- AUTH MODAL (통합 로그인/신규 캐릭터 생성 관문) -->
   <div id="auth-portal-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="glass-card w-full max-w-md p-6 rounded-2xl border border-sky-500/40 shadow-2xl relative">
+    <div class="glass-card w-full max-w-lg p-6 rounded-2xl border border-sky-500/40 shadow-2xl relative">
       <div class="text-center mb-6">
         <h1 class="text-3xl font-fantasy font-bold text-sky-400 tracking-wider">RED WINTER</h1>
-        <p class="text-xs text-sky-300/70 mt-1">왕립 벨루미아 아카데미 학적 포털</p>
+        <p class="text-xs text-sky-300/70 mt-1">왕립 벨루미아 아카데미 학적 & 고유 캐릭터 등록</p>
       </div>
 
       <div class="flex border-b border-slate-700/60 mb-6">
-        <button type="button" onclick="window.switchAuthTab('login')" id="auth-tab-login" class="flex-1 py-2 font-semibold text-sky-400 border-b-2 border-sky-400 text-center transition">로그인</button>
-        <button type="button" onclick="window.switchAuthTab('register')" id="auth-tab-register" class="flex-1 py-2 font-semibold text-slate-400 text-center transition">신규 등록</button>
+        <button type="button" onclick="window.switchAuthTab('login')" id="auth-tab-login" class="flex-1 py-2 font-semibold text-sky-400 border-b-2 border-sky-400 text-center transition">기존 학적 로그인</button>
+        <button type="button" onclick="window.switchAuthTab('register')" id="auth-tab-register" class="flex-1 py-2 font-semibold text-slate-400 text-center transition">신규 계정 + 캐릭터 생성</button>
       </div>
 
+      <!-- 로그인 폼 -->
       <form id="auth-login-form" onsubmit="window.handleAuthLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">식별 계정 / 이메일</label>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">등록 이메일</label>
           <input type="email" id="login-email" required placeholder="student@bellumia.edu" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
         <div>
@@ -45,20 +47,51 @@
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/30">아카데미 접속</button>
       </form>
 
-      <form id="auth-register-form" onsubmit="window.handleAuthRegister(event)" class="space-y-4 hidden">
-        <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">학생 이름</label>
-          <input type="text" id="reg-name" required placeholder="예: 시리우스" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+      <!-- 신규 계정 + 캐릭터 생성 통합 폼 -->
+      <form id="auth-register-form" onsubmit="window.handleAuthRegister(event)" class="space-y-3 hidden text-xs">
+        <div class="p-2.5 bg-blue-950/40 border border-blue-900/50 rounded-lg text-sky-300 mb-2">
+          💡 계정을 등록함과 동시에 아카데미에 입학할 <strong>고유 캐릭터</strong>가 계정에 귀속됩니다.
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">등록 이메일</label>
-          <input type="email" id="reg-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 font-semibold mb-1">계정 이메일</label>
+            <input type="email" id="reg-email" required placeholder="user@bellumia.edu" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block text-slate-400 font-semibold mb-1">비밀번호</label>
+            <input type="password" id="reg-password" required class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
+          </div>
         </div>
+
+        <div class="border-t border-slate-800 pt-2 font-bold text-sky-400">👤 캐릭터 상세 설정</div>
+
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">비밀번호</label>
-          <input type="password" id="reg-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+          <label class="block text-slate-400 font-semibold mb-1">캐릭터 이름</label>
+          <input type="text" id="reg-char-name" required placeholder="예: 시리우스" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/30">등록 신청</button>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 font-semibold mb-1">소속 가문 / 출신</label>
+            <input type="text" id="reg-char-house" placeholder="예: 폰 로엔그린 자작가" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block text-slate-400 font-semibold mb-1">학년 / 신분</label>
+            <input type="text" id="reg-char-rank" placeholder="예: 2학년" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">전공 학부</label>
+          <select id="reg-char-faculty" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
+            <option value="마법학부">마법학부</option>
+            <option value="신학부">신학부</option>
+            <option value="검술학부">검술학부</option>
+          </select>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/30 mt-2">학적 및 캐릭터 동시 생성</button>
       </form>
     </div>
   </div>
@@ -67,7 +100,7 @@
   <header class="h-14 border-b border-sky-900/40 bg-slate-900/95 px-4 flex items-center justify-between shrink-0">
     <div class="flex items-center gap-3">
       <h1 class="font-fantasy text-xl font-bold text-sky-400 tracking-wider">RED WINTER</h1>
-      <span class="text-xs px-2 py-0.5 rounded bg-blue-950 text-sky-300 border border-sky-800/50">Royal Bellumia Academy</span>
+      <span class="text-xs px-2 py-0.5 rounded bg-blue-950 text-sky-300 border border-sky-800/50">Royal Bellumia RPG</span>
     </div>
 
     <!-- BGM CONTROLLER & USER HEADER -->
@@ -85,13 +118,13 @@
     <!-- SIDEBAR -->
     <nav class="w-64 border-r border-sky-900/30 bg-slate-900/60 flex flex-col p-3 gap-1.5 shrink-0">
       <button type="button" onclick="window.switchTab('lore')" id="nav-lore" class="nav-btn active flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-sky-400 bg-sky-500/15 border border-sky-500/30">
-        📘 아카데미 가이드
+        📘 가이드 & 세계관
       </button>
       <button type="button" onclick="window.switchTab('characters')" id="nav-characters" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
-        👥 학생 명부 & 관계도
+        👥 학생 명부 & 내 캐릭터
       </button>
       <button type="button" onclick="window.switchTab('investigate')" id="nav-investigate" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
-        🧩 커뮤니티 조사 모듈
+        🧩 지역 조사 & 서사 모듈
       </button>
       <button type="button" onclick="window.switchTab('chat')" id="nav-chat" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
         💬 학부 통신 & 개인챗
@@ -128,72 +161,56 @@
         </div>
       </section>
 
-      <!-- TAB 2: CHARACTERS & RELATIONSHIPS -->
+      <!-- TAB 2: CHARACTERS -->
       <section id="tab-characters" class="tab-content hidden space-y-6">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-fantasy text-sky-400 font-bold">학생 명부 & 인연 관계도</h2>
-            <p class="text-xs text-slate-400">등록한 데이터는 삭제되지 않고 로컬 저장소에 영구 보존됩니다.</p>
+            <h2 class="text-xl font-fantasy text-sky-400 font-bold">학생 명부 & 고유 캐릭터 관리</h2>
+            <p class="text-xs text-slate-400">로그인한 계정에 1:1 귀속된 캐릭터만 수정 권한이 활성화됩니다.</p>
           </div>
-          <button type="button" onclick="window.openCharacterModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-blue-600/30">
-            + 신규 학생 등록
-          </button>
         </div>
 
         <div id="character-card-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </section>
 
-      <!-- TAB 3: COMMUNITY INVESTIGATION MODULE (자캐커뮤 전용 조사 시스템) -->
+      <!-- TAB 3: INVESTIGATION -->
       <section id="tab-investigate" class="tab-content hidden space-y-6 max-w-4xl mx-auto">
         <div class="glass-card p-6 rounded-xl border border-sky-500/30 space-y-6">
           <div>
-            <h2 class="text-2xl font-fantasy text-sky-400 font-bold">자캐 커뮤니티 정식 조사 모듈</h2>
-            <p class="text-xs text-slate-400 mt-1">조사자와 조사지를 선택한 후, 단계별 지문과 서사 연출을 통해 탐사를 진행합니다.</p>
+            <h2 class="text-2xl font-fantasy text-sky-400 font-bold">지역 조사 & 서사 진행 모듈</h2>
+            <p class="text-xs text-slate-400 mt-1">조사지 선택 후 서사 지문과 판정을 거쳐 단서를 탐색합니다.</p>
           </div>
 
-          <!-- 조사 설정 세션 -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900/80 p-4 rounded-xl border border-sky-900/40">
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">1. 조사 수행 캐릭터 (조사자)</label>
-              <select id="inv-actor-select" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+              <label class="block text-xs font-semibold text-slate-400 mb-1">조사 캐릭터</label>
+              <select id="inv-actor-select" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-slate-200">
                 <option value="">캐릭터를 선택하세요...</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">2. 조사지 선택</label>
-              <select id="inv-location-select" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+              <label class="block text-xs font-semibold text-slate-400 mb-1">조사지 선택</label>
+              <select id="inv-location-select" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-slate-200">
                 <option value="헬리오스 도서관 금서 구역">📚 헬리오스 도서관 금서 구역 (DC 10)</option>
                 <option value="북부 마수 삼림 외곽">🌲 북부 마수 삼림 외곽 (DC 14)</option>
                 <option value="봉인된 혹한의 얼음 탑">❄️ 봉인된 혹한의 얼음 탑 (DC 18 / 고위험)</option>
-                <option value="아카데미 지하 비밀 통로">🗝️ 아카데미 지하 비밀 통로 (DC 12)</option>
               </select>
             </div>
           </div>
 
-          <!-- 조사 컨트롤 버튼 -->
-          <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-800">
-            <button type="button" onclick="window.startInvestigationSession()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-blue-600/30">
-              ▶ 조사 시작
-            </button>
-            <button type="button" onclick="window.progressInvestigationStep()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-indigo-600/30">
-              🔍 현 수색 & 단서 탐색 (다음 단계)
-            </button>
-            <button type="button" onclick="window.finishInvestigationSession()" class="px-5 py-2.5 bg-rose-900 hover:bg-rose-800 text-rose-200 font-bold text-xs rounded-lg transition border border-rose-700/50">
-              ⏹️ 조사 종료 및 보상 정산
-            </button>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="window.startInvestigationSession()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded">▶ 조사 개시</button>
+            <button type="button" onclick="window.progressInvestigationStep()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded">🔍 현장 수색 (다음)</button>
+            <button type="button" onclick="window.finishInvestigationSession()" class="px-4 py-2 bg-rose-900 hover:bg-rose-800 text-rose-200 font-bold text-xs rounded">⏹️ 조사 종료 및 정산</button>
           </div>
 
-          <!-- 서사 지문 및 판정 출력 창 -->
-          <div>
-            <h3 class="text-xs font-bold text-slate-400 mb-2">실시간 조사 서사 지문 & 로그 콘솔</h3>
-            <div id="investigation-story-box" class="h-64 bg-slate-950 p-4 rounded-xl border border-sky-900/40 text-xs font-mono text-slate-200 overflow-y-auto space-y-2.5 custom-scrollbar leading-relaxed">
-              <p class="text-slate-500">> 조사자와 조사지를 선택한 후 [조사 시작] 버튼을 클릭하세요.</p>
-            </div>
+          <div id="investigation-story-box" class="h-48 bg-slate-950 p-4 rounded-xl border border-sky-900/40 text-xs font-mono text-slate-200 overflow-y-auto space-y-2 custom-scrollbar">
+            <p class="text-slate-500">> 조사자와 조사지를 선택한 후 조사를 시작하세요.</p>
           </div>
         </div>
       </section>
 
-      <!-- TAB 4: CHAT & PRIVATE DIRECT MESSAGES -->
+      <!-- TAB 4: CHAT -->
       <section id="tab-chat" class="tab-content hidden flex flex-col h-[calc(100vh-8rem)]">
         <div class="flex items-center justify-between mb-3 shrink-0">
           <div class="flex items-center gap-2">
@@ -234,11 +251,11 @@
     </main>
   </div>
 
-  <!-- CHARACTER EDIT / REGISTRATION MODAL -->
+  <!-- CHARACTER EDIT MODAL -->
   <div id="character-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card w-full max-w-lg p-6 rounded-2xl border border-sky-500/40 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 id="char-modal-title" class="text-lg font-bold text-sky-400 font-fantasy">신규 학생 캐릭터 등록</h3>
+        <h3 id="char-modal-title" class="text-lg font-bold text-sky-400 font-fantasy">내 캐릭터 프로필 수정</h3>
         <button type="button" onclick="window.closeCharacterModal()" class="text-slate-400 hover:text-slate-200">✕</button>
       </div>
 
@@ -336,11 +353,10 @@
     </div>
   </div>
 
-  <!-- CORE SCRIPT (LocalStorage 영구 보존 및 조사 세션 내장) -->
+  <!-- CORE SCRIPT -->
   <script>
     var currentUser = null;
 
-    // 기본 초기 데이터
     var defaultCharacters = [
       { id: 'c1', owner: 'student@bellumia.edu', name: '시리우스 폰 로엔그린', house: '폰 로엔그린 자작가', rank: '2학년 수석', faculty: '마법학부', hp: 100, mp: 120, sanity: 100, status: '정상', gold: 150, image: '', relationships: [{ targetName: '엘리아', type: '라이벌', value: 75 }] },
       { id: 'c2', owner: 'other@bellumia.edu', name: '엘리아 디아나', house: '디아나 백작가', rank: '2학년', faculty: '신학부', hp: 100, mp: 100, sanity: 100, status: '정상', gold: 200, image: '', relationships: [] }
@@ -352,7 +368,6 @@
       { id: 'p1', title: '금지된 북부 삼림 수사 동행 모집', content: '마수 토벌에 동행할 검술학부 단원을 찾습니다.', author: '시리우스', likes: 3 }
     ];
 
-    // LocalStorage 데이터 로드 및 유지
     var characters = JSON.parse(localStorage.getItem('RW_CHARACTERS')) || defaultCharacters;
     var chatMessages = JSON.parse(localStorage.getItem('RW_CHATS')) || defaultChatMessages;
     var posts = JSON.parse(localStorage.getItem('RW_POSTS')) || defaultPosts;
@@ -403,25 +418,53 @@
       if(e && e.preventDefault) e.preventDefault();
       var emailEl = document.getElementById('login-email');
       var email = emailEl && emailEl.value ? emailEl.value : 'student@bellumia.edu';
-      currentUser = { email: email, name: email.split('@')[0] };
+      
+      // 해당 계정의 캐릭터 찾기
+      var foundChar = null;
+      for(var i=0; i<characters.length; i++) {
+        if(characters[i].owner === email) { foundChar = characters[i]; break; }
+      }
+
+      currentUser = { email: email, name: foundChar ? foundChar.name : email.split('@')[0] };
       document.getElementById('current-user-display').textContent = currentUser.name;
       document.getElementById('auth-portal-modal').classList.add('hidden');
       window.renderCharacters();
       window.updateInvestigationDropdown();
+      window.updateChatDropdown();
       return false;
     };
 
     window.handleAuthRegister = function(e) {
       if(e && e.preventDefault) e.preventDefault();
-      var nameEl = document.getElementById('reg-name');
-      var emailEl = document.getElementById('reg-email');
-      var name = nameEl && nameEl.value ? nameEl.value : '신규 학생';
-      var email = emailEl && emailEl.value ? emailEl.value : 'new@bellumia.edu';
-      currentUser = { email: email, name: name };
-      document.getElementById('current-user-display').textContent = name;
+      var email = document.getElementById('reg-email').value;
+      var charName = document.getElementById('reg-char-name').value;
+      var house = document.getElementById('reg-char-house').value || '평민 출신';
+      var rank = document.getElementById('reg-char-rank').value || '1학년';
+      var faculty = document.getElementById('reg-char-faculty').value;
+
+      // 계정에 1:1 귀속되는 신규 캐릭터 즉시 생성
+      var newChar = {
+        id: 'c_' + Date.now(),
+        owner: email,
+        name: charName,
+        house: house,
+        rank: rank,
+        faculty: faculty,
+        hp: 100, mp: 100, sanity: 100, status: '정상', gold: 100,
+        image: '',
+        relationships: []
+      };
+
+      characters.push(newChar);
+      saveData();
+
+      currentUser = { email: email, name: charName };
+      document.getElementById('current-user-display').textContent = charName;
       document.getElementById('auth-portal-modal').classList.add('hidden');
+      
       window.renderCharacters();
       window.updateInvestigationDropdown();
+      window.updateChatDropdown();
       return false;
     };
 
@@ -470,13 +513,6 @@
           document.getElementById('char-faculty').value = charObj.faculty;
           document.getElementById('char-image-url').value = charObj.image || '';
         }
-      } else {
-        modalTitle.textContent = "신규 학생 캐릭터 등록";
-        editInput.value = "";
-        document.getElementById('char-name').value = "";
-        document.getElementById('char-house').value = "";
-        document.getElementById('char-rank').value = "";
-        document.getElementById('char-image-url').value = "";
       }
       document.getElementById('character-modal').classList.remove('hidden');
     };
@@ -505,16 +541,6 @@
               break;
             }
           }
-        } else {
-          var newChar = {
-            id: 'c_' + Date.now(),
-            owner: currentUser ? currentUser.email : 'guest',
-            name: name, house: house, rank: rank, faculty: faculty,
-            hp: 100, mp: 100, sanity: 100, status: '정상', gold: 100,
-            image: imgData || urlInput || '',
-            relationships: []
-          };
-          characters.push(newChar);
         }
         saveData();
         window.renderCharacters();
@@ -538,11 +564,10 @@
       if(!grid) return;
       var html = '';
       var userEmail = currentUser ? currentUser.email : '';
-      var userName = currentUser ? currentUser.name : '';
 
       for(var i=0; i<characters.length; i++) {
         var c = characters[i];
-        var isOwner = userEmail && (c.owner === userEmail || c.owner === userName);
+        var isOwner = userEmail && (c.owner === userEmail);
 
         var relHtml = '';
         if(c.relationships && c.relationships.length > 0) {
@@ -622,7 +647,7 @@
       return false;
     };
 
-    // 📜 커뮤니티 전용 조사 모듈 (지문 출력 & 세션 관리)
+    // 조사 모듈
     window.updateInvestigationDropdown = function() {
       var select = document.getElementById('inv-actor-select');
       if(!select) return;
@@ -653,21 +678,11 @@
 
       if(!charObj) return;
 
-      if(charObj.status === '실종(MISSING)') {
-        alert('[' + charObj.name + '] 학생은 실종(MISSING) 상태이므로 조사를 시작할 수 없습니다.');
-        return;
-      }
-
-      activeInvestigationSession = {
-        actorName: charObj.name,
-        location: location,
-        step: 1
-      };
+      activeInvestigationSession = { actorName: charObj.name, location: location, step: 1 };
 
       var startMsg = '<div class="p-3 bg-blue-950/60 border border-sky-800/50 rounded-lg">' +
         '<p class="text-sky-300 font-bold mb-1">[조사 개시 지문]</p>' +
-        '<p class="text-slate-200">▶ <strong>[' + charObj.name + ']</strong> 학생이(가) 서늘한 조사가 이루어지는 <strong>[' + location + ']</strong> 영역에 조심스럽게 진입합니다.</p>' +
-        '<p class="text-slate-400 text-[11px] mt-1">현장의 차가운 공기가 어깨를 누릅니다. 다음 단서를 탐색하려면 [현 수색 & 단서 탐색] 버튼을 누르세요.</p>' +
+        '<p class="text-slate-200">▶ <strong>[' + charObj.name + ']</strong> 학생이(가) 서늘한 공기가 감도는 <strong>[' + location + ']</strong> 영역 조사를 시작합니다.</p>' +
       '</div>';
 
       storyBox.innerHTML = startMsg;
@@ -676,27 +691,15 @@
 
     window.progressInvestigationStep = function() {
       var storyBox = document.getElementById('investigation-story-box');
-      if(!activeInvestigationSession) {
-        alert('진행 중인 조사가 없습니다. 먼저 [조사 시작]을 눌러주세요.');
-        return;
-      }
+      if(!activeInvestigationSession) { alert('진행 중인 조사가 없습니다.'); return; }
 
       var s = activeInvestigationSession;
       s.step++;
       var d20 = Math.floor(Math.random() * 20) + 1;
 
-      var stepMsg = '';
-      if(d20 >= 10) {
-        stepMsg = '<div class="p-3 bg-sky-950/40 border border-sky-800/40 rounded-lg">' +
-          '<p class="text-sky-400 font-bold text-[11px]">단계 ' + s.step + ' - 🎲 d20 탐색 판정: ' + d20 + ' (성공)</p>' +
-          '<p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이(가) <strong>[' + s.location + ']</strong> 구역의 은밀한 벽면에서 오래된 고대 룬 문양 단서를 발견합니다!</p>' +
-        '</div>';
-      } else {
-        stepMsg = '<div class="p-3 bg-rose-950/40 border border-rose-800/40 rounded-lg">' +
-          '<p class="text-rose-400 font-bold text-[11px]">단계 ' + s.step + ' - 🎲 d20 탐색 판정: ' + d20 + ' (실패)</p>' +
-          '<p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이(가) 수색 중 정체불명의 환영과 맞닥뜨려 이성 수치가 소폭 흔들립니다.</p>' +
-        '</div>';
-      }
+      var stepMsg = d20 >= 10 ?
+        '<div class="p-3 bg-sky-950/40 border border-sky-800/40 rounded-lg"><p class="text-sky-400 font-bold text-[11px]">단계 ' + s.step + ' - 🎲 d20 판정: ' + d20 + ' (성공)</p><p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이 <strong>[' + s.location + ']</strong> 벽면의 은밀한 고대 문양 단서를 발견합니다!</p></div>' :
+        '<div class="p-3 bg-rose-950/40 border border-rose-800/40 rounded-lg"><p class="text-rose-400 font-bold text-[11px]">단계 ' + s.step + ' - 🎲 d20 판정: ' + d20 + ' (실패)</p><p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이 환영과 맞닥뜨려 이성 수치가 소폭 흔들립니다.</p></div>';
 
       storyBox.innerHTML += stepMsg;
       storyBox.scrollTop = storyBox.scrollHeight;
@@ -704,30 +707,18 @@
 
     window.finishInvestigationSession = function() {
       var storyBox = document.getElementById('investigation-story-box');
-      if(!activeInvestigationSession) {
-        alert('종료할 조사가 없습니다.');
-        return;
-      }
+      if(!activeInvestigationSession) { alert('종료할 조사가 없습니다.'); return; }
 
       var s = activeInvestigationSession;
       var reward = Math.floor(Math.random() * 30) + 20;
 
       for(var i=0; i<characters.length; i++) {
-        if(characters[i].name === s.actorName) {
-          characters[i].gold += reward;
-          break;
-        }
+        if(characters[i].name === s.actorName) { characters[i].gold += reward; break; }
       }
       saveData();
       window.renderCharacters();
 
-      var endMsg = '<div class="p-3 bg-emerald-950/60 border border-emerald-800/50 rounded-lg">' +
-        '<p class="text-emerald-400 font-bold mb-1">[조사 종료 지문]</p>' +
-        '<p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이(가) <strong>[' + s.location + ']</strong> 탐사를 안전하게 마무리하고 아카데미 본관으로 귀환합니다.</p>' +
-        '<p class="text-sky-300 font-semibold text-[11px] mt-1">💰 획득 수확: ' + reward + ' Gold (로컬 저장소 자동 업데이트 완료)</p>' +
-      '</div>';
-
-      storyBox.innerHTML += endMsg;
+      storyBox.innerHTML += '<div class="p-3 bg-emerald-950/60 border border-emerald-800/50 rounded-lg"><p class="text-emerald-400 font-bold mb-1">[조사 완료]</p><p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이 안전하게 귀환했습니다. (' + reward + ' Gold 획득)</p></div>';
       storyBox.scrollTop = storyBox.scrollHeight;
       activeInvestigationSession = null;
     };
@@ -757,11 +748,7 @@
       if(activeBtn) activeBtn.className = "chat-tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/40";
       
       var dmSelect = document.getElementById('chat-dm-target-select');
-      if(channel === 'private') {
-        dmSelect.classList.remove('hidden');
-      } else {
-        dmSelect.classList.add('hidden');
-      }
+      if(channel === 'private') { dmSelect.classList.remove('hidden'); } else { dmSelect.classList.add('hidden'); }
       window.renderChatMessages();
     };
 
