@@ -339,4 +339,212 @@
     window.handleAuthLogin = function(e) {
       e.preventDefault();
       const email = document.getElementById('login-email').value;
-      currentUser = { email: email, name: email.split('@
+      currentUser = { email: email, name: email.split('@')[0] };
+      document.getElementById('current-user-display').textContent = currentUser.name;
+      document.getElementById('auth-portal-modal').classList.add('hidden');
+    };
+
+    window.handleAuthRegister = function(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      currentUser = { email: document.getElementById('reg-email').value, name: name };
+      document.getElementById('current-user-display').textContent = name;
+      document.getElementById('auth-portal-modal').classList.add('hidden');
+    };
+
+    window.handleLogout = function() {
+      currentUser = null;
+      document.getElementById('current-user-display').textContent = '게스트';
+      document.getElementById('auth-portal-modal').classList.remove('hidden');
+    };
+
+    window.switchTab = function(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-amber-400', 'bg-amber-500/10', 'border', 'border-amber-500/20');
+        btn.classList.add('text-slate-400');
+      });
+
+      const targetTab = document.getElementById('tab-' + tabName);
+      const targetNav = document.getElementById('nav-' + tabName);
+      if(targetTab) targetTab.classList.remove('hidden');
+      if(targetNav) {
+        targetNav.classList.remove('text-slate-400');
+        targetNav.classList.add('text-amber-400', 'bg-amber-500/10', 'border', 'border-amber-500/20');
+      }
+    };
+
+    window.openCharacterModal = function() { document.getElementById('character-modal').classList.remove('hidden'); };
+    window.closeCharacterModal = function() { document.getElementById('character-modal').classList.add('hidden'); };
+
+    window.handleSaveCharacter = function(e) {
+      e.preventDefault();
+      const name = document.getElementById('char-name').value;
+      const house = document.getElementById('char-house').value || '평민 출신';
+      const rank = document.getElementById('char-rank').value || '1학년';
+      const faculty = document.getElementById('char-faculty').value;
+      const fileInput = document.getElementById('char-file-input');
+      const urlInput = document.getElementById('char-image-url').value;
+
+      const createChar = (imgData) => {
+        const newChar = {
+          id: Date.now().toString(),
+          name, house, rank, faculty,
+          hp: 100, mp: 100, sanity: 100, status: '정상', gold: 100,
+          image: imgData || urlInput || ''
+        };
+        characters.push(newChar);
+        window.renderCharacters();
+        window.updateChatDropdown();
+        window.closeCharacterModal();
+      };
+
+      if(fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (evt) => createChar(evt.target.result);
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        createChar();
+      }
+    };
+
+    window.renderCharacters = function() {
+      const grid = document.getElementById('character-card-grid');
+      if(!grid) return;
+      grid.innerHTML = characters.map(c => `
+        <div class="glass-card p-4 rounded-xl border border-slate-800 relative space-y-3">
+          <div class="flex gap-3 items-center">
+            <div class="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+              ${c.image ? `<img src="${c.image}" class="w-full h-full object-cover">` : `<i data-lucide="user" class="w-6 h-6 text-slate-500"></i>`}
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-100 text-sm">${c.name}</h3>
+              <p class="text-xs text-amber-400/90">${c.house} · ${c.rank}</p>
+              <span class="inline-block text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 mt-1">${c.faculty}</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-1 text-[11px] bg-slate-950/60 p-2 rounded border border-slate-800 text-center">
+            <div><span class="text-slate-500 block">생명력</span> <span class="text-rose-400 font-bold">${c.hp}</span></div>
+            <div><span class="text-slate-500 block">마력</span> <span class="text-blue-400 font-bold">${c.mp}</span></div>
+            <div><span class="text-slate-500 block">이성</span> <span class="text-emerald-400 font-bold">${c.sanity}</span></div>
+          </div>
+          <div class="flex justify-between items-center text-xs text-slate-400 pt-1">
+            <span>상태: <strong class="${c.status === '실종(MISSING)' ? 'text-rose-500 animate-pulse' : 'text-emerald-400'}">${c.status}</strong></span>
+            <span class="text-amber-400 font-mono">${c.gold} Gold</span>
+          </div>
+        </div>
+      `).join('');
+      if(window.lucide) window.lucide.createIcons();
+    };
+
+    window.updateChatDropdown = function() {
+      const select = document.getElementById('chat-as-character-select');
+      if(!select) return;
+      select.innerHTML = `<option value="">발언할 캐릭터 선택...</option>` + 
+        characters.map(c => `<option value="${c.name}">${c.name} (${c.faculty})</option>`).join('');
+    };
+
+    window.switchChatChannel = function(channel) {
+      activeChannel = channel;
+      document.querySelectorAll('.chat-tab-btn').forEach(b => {
+        b.className = "chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800";
+      });
+      const activeBtn = document.getElementById('chat-tab-' + channel);
+      if(activeBtn) activeBtn.className = "chat-tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30";
+      window.renderChatMessages();
+    };
+
+    window.handleSendChatMessage = function(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input-field');
+      const charSelect = document.getElementById('chat-as-character-select');
+      const author = charSelect.value || (currentUser ? currentUser.name : '무명 학생');
+      const charObj = characters.find(c => c.name === author);
+      const faculty = charObj ? charObj.faculty : '일반';
+
+      chatMessages.push({
+        id: Date.now().toString(),
+        author, faculty,
+        text: input.value,
+        channel: activeChannel,
+        time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+      });
+      input.value = '';
+      window.renderChatMessages();
+    };
+
+    window.renderChatMessages = function() {
+      const container = document.getElementById('chat-message-container');
+      if(!container) return;
+      const filtered = activeChannel === 'all' ? chatMessages : chatMessages.filter(m => m.channel === activeChannel || m.faculty.includes(activeChannel));
+      container.innerHTML = filtered.map(m => `
+        <div class="p-2.5 rounded bg-slate-900/60 border border-slate-800/80 space-y-1">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="font-bold text-amber-400">${m.author} <span class="text-slate-500 text-[10px]">(${m.faculty})</span></span>
+            <span class="text-slate-500">${m.time}</span>
+          </div>
+          <p class="text-xs text-slate-200">${m.text}</p>
+        </div>
+      `).join('');
+      container.scrollTop = container.scrollHeight;
+    };
+
+    window.startInvestigation = function(area) {
+      const logBox = document.getElementById('investigation-log-box');
+      const rand = Math.random();
+      let res = '';
+      if(rand > 0.4) {
+        res = `[성공] ${area} 탐사를 완료하여 20 Gold와 마법 시약을 획득했습니다.`;
+      } else if(rand > 0.1) {
+        res = `[경고] ${area} 탐사 중 함정을 만나 부상을 입었습니다. (생명력 -15)`;
+      } else {
+        res = `[위험] ${area} 깊은 곳에서 정체불명의 그림자가 나타나 학생 1명이 [실종(MISSING)] 상태에 빠졌습니다!`;
+        if(characters.length > 0) characters[0].status = '실종(MISSING)';
+        window.renderCharacters();
+      }
+      logBox.innerHTML += `<p class="text-amber-300/90">> ${res}</p>`;
+      logBox.scrollTop = logBox.scrollHeight;
+    };
+
+    window.openPostModal = function() { document.getElementById('post-modal').classList.remove('hidden'); };
+    window.closePostModal = function() { document.getElementById('post-modal').classList.add('hidden'); };
+
+    window.handleSavePost = function(e) {
+      e.preventDefault();
+      posts.unshift({
+        id: Date.now().toString(),
+        title: document.getElementById('post-title').value,
+        content: document.getElementById('post-content').value,
+        author: currentUser ? currentUser.name : '익명',
+        likes: 0
+      });
+      window.renderPosts();
+      window.closePostModal();
+    };
+
+    window.renderPosts = function() {
+      const list = document.getElementById('board-post-list');
+      if(!list) return;
+      list.innerHTML = posts.map(p => `
+        <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-2">
+          <h3 class="font-bold text-slate-100 text-sm">${p.title}</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">${p.content}</p>
+          <div class="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-800/60">
+            <span>작성자: ${p.author}</span>
+            <span>추천 ${p.likes}</span>
+          </div>
+        </div>
+      `).join('');
+    };
+
+    // DOM Ready Init
+    document.addEventListener('DOMContentLoaded', () => {
+      if(window.lucide) window.lucide.createIcons();
+      window.renderCharacters();
+      window.updateChatDropdown();
+      window.renderChatMessages();
+      window.renderPosts();
+    });
+  </script>
+</body>
+</html>
