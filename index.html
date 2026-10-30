@@ -91,7 +91,7 @@
         👥 학생 명부 & 관계도
       </button>
       <button type="button" onclick="window.switchTab('investigate')" id="nav-investigate" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
-        🧩 지역 조사 & 위험 탐사
+        🧩 커뮤니티 조사 모듈
       </button>
       <button type="button" onclick="window.switchTab('chat')" id="nav-chat" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
         💬 학부 통신 & 개인챗
@@ -133,7 +133,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-xl font-fantasy text-sky-400 font-bold">학생 명부 & 인연 관계도</h2>
-            <p class="text-xs text-slate-400">로그인한 계정으로 등록한 본인 캐릭터만 프로필 수정 권한이 부여됩니다.</p>
+            <p class="text-xs text-slate-400">등록한 데이터는 삭제되지 않고 로컬 저장소에 영구 보존됩니다.</p>
           </div>
           <button type="button" onclick="window.openCharacterModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-blue-600/30">
             + 신규 학생 등록
@@ -143,40 +143,51 @@
         <div id="character-card-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </section>
 
-      <!-- TAB 3: INVESTIGATION -->
-      <section id="tab-investigate" class="tab-content hidden space-y-6">
-        <div class="glass-card p-6 rounded-xl border border-sky-500/30">
-          <h2 class="text-xl font-fantasy text-sky-400 font-bold mb-2">아카데미 외곽 위험 탐사</h2>
-          <p class="text-xs text-slate-400 mb-6">위험 구역 탐사 시 확률에 따라 부상 및 실종(MISSING) 상태가 발생합니다.</p>
+      <!-- TAB 3: COMMUNITY INVESTIGATION MODULE (자캐커뮤 전용 조사 시스템) -->
+      <section id="tab-investigate" class="tab-content hidden space-y-6 max-w-4xl mx-auto">
+        <div class="glass-card p-6 rounded-xl border border-sky-500/30 space-y-6">
+          <div>
+            <h2 class="text-2xl font-fantasy text-sky-400 font-bold">자캐 커뮤니티 정식 조사 모듈</h2>
+            <p class="text-xs text-slate-400 mt-1">조사자와 조사지를 선택한 후, 단계별 지문과 서사 연출을 통해 탐사를 진행합니다.</p>
+          </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="p-4 rounded-lg bg-slate-900 border border-sky-900/40 flex flex-col justify-between h-44">
-              <div>
-                <h3 class="font-bold text-slate-200 text-sm">헬리오스 도서관 지하 서고</h3>
-                <p class="text-xs text-slate-400 mt-1">위험도: ★☆☆ | 실종 확률 10%</p>
-              </div>
-              <button type="button" onclick="window.startInvestigation('헬리오스 지하 서고', 0.10)" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded transition border border-sky-700/50">조사 시작</button>
+          <!-- 조사 설정 세션 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900/80 p-4 rounded-xl border border-sky-900/40">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">1. 조사 수행 캐릭터 (조사자)</label>
+              <select id="inv-actor-select" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="">캐릭터를 선택하세요...</option>
+              </select>
             </div>
-            <div class="p-4 rounded-lg bg-slate-900 border border-sky-900/40 flex flex-col justify-between h-44">
-              <div>
-                <h3 class="font-bold text-slate-200 text-sm">금지된 북부 삼림</h3>
-                <p class="text-xs text-slate-400 mt-1">위험도: ★★☆ | 실종 확률 25%</p>
-              </div>
-              <button type="button" onclick="window.startInvestigation('금지된 북부 삼림', 0.25)" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded transition border border-sky-700/50">조사 시작</button>
-            </div>
-            <div class="p-4 rounded-lg bg-slate-900 border border-sky-900/40 flex flex-col justify-between h-44">
-              <div>
-                <h3 class="font-bold text-rose-300 text-sm">봉인된 혹한의 탑 (고위험)</h3>
-                <p class="text-xs text-slate-400 mt-1">위험도: ★★★ | 실종 확률 45%</p>
-              </div>
-              <button type="button" onclick="window.startInvestigation('봉인된 혹한의 탑', 0.45)" class="w-full py-2 bg-rose-950/70 hover:bg-rose-900 text-rose-300 font-semibold text-xs rounded transition border border-rose-800/50">조사 시작</button>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">2. 조사지 선택</label>
+              <select id="inv-location-select" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="헬리오스 도서관 금서 구역">📚 헬리오스 도서관 금서 구역 (DC 10)</option>
+                <option value="북부 마수 삼림 외곽">🌲 북부 마수 삼림 외곽 (DC 14)</option>
+                <option value="봉인된 혹한의 얼음 탑">❄️ 봉인된 혹한의 얼음 탑 (DC 18 / 고위험)</option>
+                <option value="아카데미 지하 비밀 통로">🗝️ 아카데미 지하 비밀 통로 (DC 12)</option>
+              </select>
             </div>
           </div>
 
-          <div class="mt-6">
-            <h4 class="text-xs font-bold text-slate-400 mb-2">실시간 탐사 로그</h4>
-            <div id="investigation-log-box" class="h-36 bg-slate-950 p-3 rounded border border-sky-900/30 text-xs font-mono text-slate-300 overflow-y-auto space-y-1 custom-scrollbar">
-              <p class="text-slate-500">> 아카데미 위험 탐사 시스템 준비 완료.</p>
+          <!-- 조사 컨트롤 버튼 -->
+          <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-800">
+            <button type="button" onclick="window.startInvestigationSession()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-blue-600/30">
+              ▶ 조사 시작
+            </button>
+            <button type="button" onclick="window.progressInvestigationStep()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-indigo-600/30">
+              🔍 현 수색 & 단서 탐색 (다음 단계)
+            </button>
+            <button type="button" onclick="window.finishInvestigationSession()" class="px-5 py-2.5 bg-rose-900 hover:bg-rose-800 text-rose-200 font-bold text-xs rounded-lg transition border border-rose-700/50">
+              ⏹️ 조사 종료 및 보상 정산
+            </button>
+          </div>
+
+          <!-- 서사 지문 및 판정 출력 창 -->
+          <div>
+            <h3 class="text-xs font-bold text-slate-400 mb-2">실시간 조사 서사 지문 & 로그 콘솔</h3>
+            <div id="investigation-story-box" class="h-64 bg-slate-950 p-4 rounded-xl border border-sky-900/40 text-xs font-mono text-slate-200 overflow-y-auto space-y-2.5 custom-scrollbar leading-relaxed">
+              <p class="text-slate-500">> 조사자와 조사지를 선택한 후 [조사 시작] 버튼을 클릭하세요.</p>
             </div>
           </div>
         </div>
@@ -325,20 +336,34 @@
     </div>
   </div>
 
-  <!-- CORE SCRIPT -->
+  <!-- CORE SCRIPT (LocalStorage 영구 보존 및 조사 세션 내장) -->
   <script>
     var currentUser = null;
-    var characters = [
+
+    // 기본 초기 데이터
+    var defaultCharacters = [
       { id: 'c1', owner: 'student@bellumia.edu', name: '시리우스 폰 로엔그린', house: '폰 로엔그린 자작가', rank: '2학년 수석', faculty: '마법학부', hp: 100, mp: 120, sanity: 100, status: '정상', gold: 150, image: '', relationships: [{ targetName: '엘리아', type: '라이벌', value: 75 }] },
       { id: 'c2', owner: 'other@bellumia.edu', name: '엘리아 디아나', house: '디아나 백작가', rank: '2학년', faculty: '신학부', hp: 100, mp: 100, sanity: 100, status: '정상', gold: 200, image: '', relationships: [] }
     ];
-    var chatMessages = [
+    var defaultChatMessages = [
       { id: 'm1', author: '시리우스', targetAuthor: '', faculty: '마법학부', text: '헬리오스 지하 서고 조사를 함께 가실 분 계신가요?', channel: 'all', time: '오전 10:15' }
     ];
-    var posts = [
+    var defaultPosts = [
       { id: 'p1', title: '금지된 북부 삼림 수사 동행 모집', content: '마수 토벌에 동행할 검술학부 단원을 찾습니다.', author: '시리우스', likes: 3 }
     ];
+
+    // LocalStorage 데이터 로드 및 유지
+    var characters = JSON.parse(localStorage.getItem('RW_CHARACTERS')) || defaultCharacters;
+    var chatMessages = JSON.parse(localStorage.getItem('RW_CHATS')) || defaultChatMessages;
+    var posts = JSON.parse(localStorage.getItem('RW_POSTS')) || defaultPosts;
     var activeChannel = 'all';
+    var activeInvestigationSession = null;
+
+    function saveData() {
+      localStorage.setItem('RW_CHARACTERS', JSON.stringify(characters));
+      localStorage.setItem('RW_CHATS', JSON.stringify(chatMessages));
+      localStorage.setItem('RW_POSTS', JSON.stringify(posts));
+    }
 
     window.toggleBGM = function() {
       var player = document.getElementById('bgm-player');
@@ -382,6 +407,7 @@
       document.getElementById('current-user-display').textContent = currentUser.name;
       document.getElementById('auth-portal-modal').classList.add('hidden');
       window.renderCharacters();
+      window.updateInvestigationDropdown();
       return false;
     };
 
@@ -395,6 +421,7 @@
       document.getElementById('current-user-display').textContent = name;
       document.getElementById('auth-portal-modal').classList.add('hidden');
       window.renderCharacters();
+      window.updateInvestigationDropdown();
       return false;
     };
 
@@ -403,6 +430,7 @@
       document.getElementById('current-user-display').textContent = '게스트';
       document.getElementById('auth-portal-modal').classList.remove('hidden');
       window.renderCharacters();
+      window.updateInvestigationDropdown();
     };
 
     window.switchTab = function(tabName) {
@@ -488,8 +516,10 @@
           };
           characters.push(newChar);
         }
+        saveData();
         window.renderCharacters();
         window.updateChatDropdown();
+        window.updateInvestigationDropdown();
         window.closeCharacterModal();
       };
 
@@ -586,31 +616,123 @@
           break;
         }
       }
+      saveData();
       window.renderCharacters();
       window.closeRelationModal();
       return false;
     };
 
-    window.startInvestigation = function(area, missingChance) {
-      var logBox = document.getElementById('investigation-log-box');
-      if(!logBox) return;
-      var rand = Math.random();
-      var res = '';
-      
-      if(rand < missingChance) {
-        res = '💥 [위험] ' + area + ' 탐사 도중 정체불명의 고대 기운에 휩싸여 학생 1명이 [실종(MISSING)] 상태가 되었습니다!';
-        if(characters.length > 0) characters[0].status = '실종(MISSING)';
-        window.renderCharacters();
-      } else if(rand < 0.7) {
-        res = '✨ [성공] ' + area + ' 조사를 무사히 마치고 30 Gold와 마법 시약을 채집했습니다.';
-      } else {
-        res = '⚠️ [경고] ' + area + ' 경계 중 마수와 맞닥뜨려 가벼운 부상을 입었습니다. (생명력 -10)';
+    // 📜 커뮤니티 전용 조사 모듈 (지문 출력 & 세션 관리)
+    window.updateInvestigationDropdown = function() {
+      var select = document.getElementById('inv-actor-select');
+      if(!select) return;
+      var options = '<option value="">조사 캐릭터 선택...</option>';
+      for(var i=0; i<characters.length; i++) {
+        options += '<option value="' + characters[i].id + '">' + characters[i].name + ' (' + characters[i].faculty + ')</option>';
       }
-
-      logBox.innerHTML += '<p class="' + (res.includes('위험') ? 'text-rose-400' : 'text-sky-300') + '">> ' + res + '</p>';
-      logBox.scrollTop = logBox.scrollHeight;
+      select.innerHTML = options;
     };
 
+    window.startInvestigationSession = function() {
+      var actorSelect = document.getElementById('inv-actor-select');
+      var locSelect = document.getElementById('inv-location-select');
+      var storyBox = document.getElementById('investigation-story-box');
+
+      var actorId = actorSelect ? actorSelect.value : '';
+      var location = locSelect ? locSelect.value : '';
+
+      if(!actorId) {
+        alert('조사를 수행할 캐릭터를 먼저 선택해 주세요!');
+        return;
+      }
+
+      var charObj = null;
+      for(var i=0; i<characters.length; i++) {
+        if(characters[i].id === actorId) { charObj = characters[i]; break; }
+      }
+
+      if(!charObj) return;
+
+      if(charObj.status === '실종(MISSING)') {
+        alert('[' + charObj.name + '] 학생은 실종(MISSING) 상태이므로 조사를 시작할 수 없습니다.');
+        return;
+      }
+
+      activeInvestigationSession = {
+        actorName: charObj.name,
+        location: location,
+        step: 1
+      };
+
+      var startMsg = '<div class="p-3 bg-blue-950/60 border border-sky-800/50 rounded-lg">' +
+        '<p class="text-sky-300 font-bold mb-1">[조사 개시 지문]</p>' +
+        '<p class="text-slate-200">▶ <strong>[' + charObj.name + ']</strong> 학생이(가) 서늘한 조사가 이루어지는 <strong>[' + location + ']</strong> 영역에 조심스럽게 진입합니다.</p>' +
+        '<p class="text-slate-400 text-[11px] mt-1">현장의 차가운 공기가 어깨를 누릅니다. 다음 단서를 탐색하려면 [현 수색 & 단서 탐색] 버튼을 누르세요.</p>' +
+      '</div>';
+
+      storyBox.innerHTML = startMsg;
+      storyBox.scrollTop = storyBox.scrollHeight;
+    };
+
+    window.progressInvestigationStep = function() {
+      var storyBox = document.getElementById('investigation-story-box');
+      if(!activeInvestigationSession) {
+        alert('진행 중인 조사가 없습니다. 먼저 [조사 시작]을 눌러주세요.');
+        return;
+      }
+
+      var s = activeInvestigationSession;
+      s.step++;
+      var d20 = Math.floor(Math.random() * 20) + 1;
+
+      var stepMsg = '';
+      if(d20 >= 10) {
+        stepMsg = '<div class="p-3 bg-sky-950/40 border border-sky-800/40 rounded-lg">' +
+          '<p class="text-sky-400 font-bold text-[11px]">단계 ' + s.step + ' - 🎲 d20 탐색 판정: ' + d20 + ' (성공)</p>' +
+          '<p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이(가) <strong>[' + s.location + ']</strong> 구역의 은밀한 벽면에서 오래된 고대 룬 문양 단서를 발견합니다!</p>' +
+        '</div>';
+      } else {
+        stepMsg = '<div class="p-3 bg-rose-950/40 border border-rose-800/40 rounded-lg">' +
+          '<p class="text-rose-400 font-bold text-[11px]">단계 ' + s.step + ' - 🎲 d20 탐색 판정: ' + d20 + ' (실패)</p>' +
+          '<p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이(가) 수색 중 정체불명의 환영과 맞닥뜨려 이성 수치가 소폭 흔들립니다.</p>' +
+        '</div>';
+      }
+
+      storyBox.innerHTML += stepMsg;
+      storyBox.scrollTop = storyBox.scrollHeight;
+    };
+
+    window.finishInvestigationSession = function() {
+      var storyBox = document.getElementById('investigation-story-box');
+      if(!activeInvestigationSession) {
+        alert('종료할 조사가 없습니다.');
+        return;
+      }
+
+      var s = activeInvestigationSession;
+      var reward = Math.floor(Math.random() * 30) + 20;
+
+      for(var i=0; i<characters.length; i++) {
+        if(characters[i].name === s.actorName) {
+          characters[i].gold += reward;
+          break;
+        }
+      }
+      saveData();
+      window.renderCharacters();
+
+      var endMsg = '<div class="p-3 bg-emerald-950/60 border border-emerald-800/50 rounded-lg">' +
+        '<p class="text-emerald-400 font-bold mb-1">[조사 종료 지문]</p>' +
+        '<p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이(가) <strong>[' + s.location + ']</strong> 탐사를 안전하게 마무리하고 아카데미 본관으로 귀환합니다.</p>' +
+        '<p class="text-sky-300 font-semibold text-[11px] mt-1">💰 획득 수확: ' + reward + ' Gold (로컬 저장소 자동 업데이트 완료)</p>' +
+      '</div>';
+
+      storyBox.innerHTML += endMsg;
+      storyBox.scrollTop = storyBox.scrollHeight;
+      activeInvestigationSession = null;
+    };
+
+    // 채팅 기능
     window.updateChatDropdown = function() {
       var select = document.getElementById('chat-as-character-select');
       var dmSelect = document.getElementById('chat-dm-target-select');
@@ -668,6 +790,7 @@
         channel: activeChannel,
         time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
       });
+      saveData();
       input.value = '';
       window.renderChatMessages();
       return false;
@@ -719,6 +842,7 @@
         author: currentUser ? currentUser.name : '익명',
         likes: 0
       });
+      saveData();
       window.renderPosts();
       window.closePostModal();
       return false;
@@ -745,6 +869,7 @@
     window.onload = function() {
       window.renderCharacters();
       window.updateChatDropdown();
+      window.updateInvestigationDropdown();
       window.renderChatMessages();
       window.renderPosts();
     };
