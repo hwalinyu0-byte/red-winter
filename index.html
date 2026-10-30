@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RED WINTER : 왕립 벨루미아 아카데미 - 캐릭터 귀속 & 상태이상 시스템</title>
+  <title>RED WINTER : 왕립 벨루미아 아카데미 - 캐릭터 귀속 & 삭제 시스템</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Pretendard:wght@300;400;600;700&display=swap');
@@ -25,7 +25,7 @@
     <div class="glass-card w-full max-w-lg p-6 rounded-2xl border border-sky-500/40 shadow-2xl relative">
       <div class="text-center mb-6">
         <h1 class="text-3xl font-fantasy font-bold text-sky-400 tracking-wider">RED WINTER</h1>
-        <p class="text-xs text-sky-300/70 mt-1">계정 생성 시 고유 캐릭터가 독점 귀속됩니다.</p>
+        <p class="text-xs text-sky-300/70 mt-1">계정 접속 및 고유 캐릭터 독점 귀속 관리</p>
       </div>
 
       <div class="flex border-b border-slate-700/60 mb-6">
@@ -49,7 +49,7 @@
       <!-- 신규 계정 + 고유 캐릭터 동시 등록 폼 -->
       <form id="auth-register-form" onsubmit="window.handleAuthRegister(event)" class="space-y-3 hidden text-xs">
         <div class="p-2.5 bg-blue-950/50 border border-blue-900/60 rounded-lg text-sky-300 mb-2">
-          ✨ 계정을 등록하는 즉시 해당 계정에 독점 귀속되는 <strong>고유 캐릭터</strong>가 같이 생성됩니다.
+          ✨ 계정을 등록하는 즉시 해당 계정에 독점 귀속되는 <strong>고유 캐릭터</strong>가 생성됩니다.
         </div>
         
         <div class="grid grid-cols-2 gap-3">
@@ -108,7 +108,7 @@
         <input type="range" id="bgm-volume" min="0" max="1" step="0.1" value="0.3" onchange="window.setBGMVolume(this.value)" class="w-16 h-1 bg-slate-700 rounded cursor-pointer accent-sky-400">
       </div>
       <span id="current-user-display" class="text-slate-300 font-semibold">게스트</span>
-      <button type="button" onclick="window.handleLogout()" class="text-slate-400 hover:text-rose-400 transition">로그아웃</button>
+      <button type="button" onclick="window.handleLogout()" class="px-3 py-1 bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-bold rounded border border-rose-800/60 transition">🚪 로그아웃</button>
     </div>
   </header>
 
@@ -164,7 +164,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-xl font-fantasy text-sky-400 font-bold">학생 명부 & 고유 캐릭터 관리</h2>
-            <p class="text-xs text-slate-400">조사 및 이벤트 수치 변화가 실시간 반영됩니다. (생명력/이성이 0이 되면 기절/광기 상태 적용)</p>
+            <p class="text-xs text-slate-400">내 소유 캐릭터는 직접 [✏️ 수정] 및 [🗑️ 삭제]할 수 있습니다.</p>
           </div>
         </div>
 
@@ -355,7 +355,6 @@
   <script>
     var currentUser = null;
 
-    // 기존 샘플 캐릭터 제거 (빈 배열로 시작)
     var characters = JSON.parse(localStorage.getItem('RW_CHARACTERS')) || [];
     var chatMessages = JSON.parse(localStorage.getItem('RW_CHATS')) || [];
     var posts = JSON.parse(localStorage.getItem('RW_POSTS')) || [];
@@ -402,7 +401,7 @@
       }
     };
 
-    // 로그인
+    // 1. 기존 학적 로그인
     window.handleAuthLogin = function(e) {
       if(e && e.preventDefault) e.preventDefault();
       var emailEl = document.getElementById('login-email');
@@ -422,7 +421,7 @@
       return false;
     };
 
-    // 신규 회원가입 + 고유 캐릭터 자동 귀속 생성
+    // 2. 신규 회원가입 + 고유 캐릭터 동시 생성
     window.handleAuthRegister = function(e) {
       if(e && e.preventDefault) e.preventDefault();
       var email = document.getElementById('reg-email').value;
@@ -456,12 +455,31 @@
       return false;
     };
 
+    // 3. 로그아웃 기능
     window.handleLogout = function() {
       currentUser = null;
       document.getElementById('current-user-display').textContent = '게스트';
       document.getElementById('auth-portal-modal').classList.remove('hidden');
       window.renderCharacters();
       window.updateInvestigationDropdown();
+    };
+
+    // 4. 내 고유 캐릭터 직접 삭제 기능
+    window.deleteCharacter = function(charId) {
+      var targetChar = null;
+      for(var i=0; i<characters.length; i++) {
+        if(characters[i].id === charId) { targetChar = characters[i]; break; }
+      }
+
+      if(!targetChar) return;
+
+      if(confirm('정말로 [' + targetChar.name + '] 캐릭터를 영구 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+        characters = characters.filter(function(c) { return c.id !== charId; });
+        saveData();
+        window.renderCharacters();
+        window.updateInvestigationDropdown();
+        window.updateChatDropdown();
+      }
     };
 
     window.switchTab = function(tabName) {
@@ -547,7 +565,7 @@
       return false;
     };
 
-    // 치료 및 회복 기능
+    // 양호실 입원 치료
     window.healCharacter = function(charId) {
       for(var i=0; i<characters.length; i++) {
         if(characters[i].id === charId) {
@@ -605,7 +623,10 @@
                 '<span class="inline-block text-[10px] px-1.5 py-0.5 rounded bg-blue-950 text-sky-300 border border-sky-800/40 mt-1">' + c.faculty + '</span>' +
               '</div>' +
             '</div>' +
-            (isOwner ? '<button type="button" onclick="window.openCharacterModal(\'' + c.id + '\')" class="px-2.5 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-200 text-[11px] rounded border border-sky-700 font-semibold shadow">✏️ 수정</button>' : '<span class="text-[10px] text-slate-500 px-2 py-1">열람 전용</span>') +
+            (isOwner ? '<div class="flex gap-1">' +
+              '<button type="button" onclick="window.openCharacterModal(\'' + c.id + '\')" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-200 text-[10px] rounded border border-sky-700 font-semibold shadow">✏️ 수정</button>' +
+              '<button type="button" onclick="window.deleteCharacter(\'' + c.id + '\')" class="px-2 py-1 bg-rose-950/80 hover:bg-rose-900 text-rose-300 text-[10px] rounded border border-rose-800 font-semibold shadow">🗑️ 삭제</button>' +
+            '</div>' : '<span class="text-[10px] text-slate-500 px-2 py-1">열람 전용</span>') +
           '</div>' +
           '<div class="grid grid-cols-3 gap-1 text-[11px] bg-slate-950 p-2 rounded border border-sky-900/40 text-center">' +
             '<div><span class="text-slate-500 block">생명력</span> <span class="text-rose-400 font-bold">' + c.hp + ' / 100</span></div>' +
@@ -662,7 +683,7 @@
       return false;
     };
 
-    // 조사 시스템 (수치 감소 및 프로필 반영)
+    // 조사 시스템
     window.updateInvestigationDropdown = function() {
       var select = document.getElementById('inv-actor-select');
       if(!select) return;
@@ -691,16 +712,13 @@
       if(!charObj) return;
 
       if(charObj.status === '기절(FAINTED)' || charObj.status === '실종(MISSING)') {
-        alert('[' + charObj.name + '] 학생은 현재 ' + charObj.status + ' 상태이므로 조사를 수행할 수 없습니다. 치료 또는 구조가 필요합니다.');
+        alert('[' + charObj.name + '] 학생은 현재 ' + charObj.status + ' 상태이므로 조사를 수행할 수 없습니다.');
         return;
       }
 
       activeInvestigationSession = { actorId: charObj.id, actorName: charObj.name, location: location, step: 1 };
 
-      storyBox.innerHTML = '<div class="p-3 bg-blue-950/60 border border-sky-800/50 rounded-lg">' +
-        '<p class="text-sky-300 font-bold mb-1">[조사 개시 지문]</p>' +
-        '<p class="text-slate-200">▶ <strong>[' + charObj.name + ']</strong> 학생이(가) 서늘한 공기가 감도는 <strong>[' + location + ']</strong> 영역 조사를 시작합니다.</p>' +
-      '</div>';
+      storyBox.innerHTML = '<div class="p-3 bg-blue-950/60 border border-sky-800/50 rounded-lg"><p class="text-sky-300 font-bold mb-1">[조사 개시 지문]</p><p class="text-slate-200">▶ <strong>[' + charObj.name + ']</strong> 학생이(가) 서늘한 공기가 감도는 <strong>[' + location + ']</strong> 영역 조사를 시작합니다.</p></div>';
       storyBox.scrollTop = storyBox.scrollHeight;
     };
 
@@ -724,19 +742,14 @@
         charObj.gold += gainGold;
         storyBox.innerHTML += '<div class="p-3 bg-sky-950/40 border border-sky-800/40 rounded-lg"><p class="text-sky-400 font-bold text-[11px]">단계 ' + s.step + ' - 🎲 d20 판정: ' + d20 + ' (성공)</p><p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이 고대 룬 문양 단서를 발견하고 ' + gainGold + ' Gold를 획득합니다!</p></div>';
       } else {
-        // 실패 시 HP 및 이성 차감
         var hpDmg = Math.floor(Math.random() * 20) + 10;
         var sanityDmg = Math.floor(Math.random() * 20) + 10;
         
         charObj.hp = Math.max(0, charObj.hp - hpDmg);
         charObj.sanity = Math.max(0, charObj.sanity - sanityDmg);
 
-        // 상태이상 판정
-        if(charObj.hp <= 0) {
-          charObj.status = '기절(FAINTED)';
-        } else if(charObj.sanity <= 0) {
-          charObj.status = '광기(MADNESS)';
-        }
+        if(charObj.hp <= 0) { charObj.status = '기절(FAINTED)'; }
+        else if(charObj.sanity <= 0) { charObj.status = '광기(MADNESS)'; }
 
         storyBox.innerHTML += '<div class="p-3 bg-rose-950/40 border border-rose-800/40 rounded-lg"><p class="text-rose-400 font-bold text-[11px]">단계 ' + s.step + ' - 🎲 d20 판정: ' + d20 + ' (실패)</p><p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이 함정에 빠져 피해를 입었습니다! (HP -' + hpDmg + ', 이성 -' + sanityDmg + ')</p>' +
         (charObj.status !== '정상' ? '<p class="text-rose-400 font-bold mt-1">💥 [상태이상발생] ' + charObj.name + ' 학생이 [' + charObj.status + '] 상태에 빠졌습니다!</p>' : '') +
@@ -753,7 +766,7 @@
       if(!activeInvestigationSession) { alert('종료할 조사가 없습니다.'); return; }
 
       var s = activeInvestigationSession;
-      storyBox.innerHTML += '<div class="p-3 bg-emerald-950/60 border border-emerald-800/50 rounded-lg"><p class="text-emerald-400 font-bold mb-1">[조사 종료]</p><p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이 탐사를 마치고 아카데미로 귀환했습니다. 모든 결과가 프로필에 반영되었습니다.</p></div>';
+      storyBox.innerHTML += '<div class="p-3 bg-emerald-950/60 border border-emerald-800/50 rounded-lg"><p class="text-emerald-400 font-bold mb-1">[조사 종료]</p><p class="text-slate-200">▶ <strong>[' + s.actorName + ']</strong> 학생이 탐사를 마치고 귀환했습니다.</p></div>';
       storyBox.scrollTop = storyBox.scrollHeight;
       activeInvestigationSession = null;
     };
