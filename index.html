@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RED WINTER — Royal Central Academy Archive</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Inter & Noto Sans KR Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#090d16',
+                            card: '#111827',
+                            panel: '#1e293b',
+                            border: '#334155',
+                            accent: '#3b82f6',
+                            hover: '#2563eb',
+                            cyan: '#60a5fa',
+                            textMuted: '#94a3b8',
+                            textLight: '#f8fafc'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans KR', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #090d16;
+            color: #f8fafc;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row overflow-x-hidden antialiased">
+
+    <!-- Auth Portal Modal (First Screen on Entry) -->
+    <div id="auth-portal-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+        <div class="bg-brand-card border border-brand-accent/40 rounded-xl max-w-md w-full p-6 space-y-5 shadow-2xl shadow-blue-500/10">
+            <!-- Header -->
+            <div class="text-center space-y-2 border-b border-brand-border pb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 mx-auto flex items-center justify-center font-black text-white text-xl shadow-lg shadow-blue-500/30">
+                    RW
+                </div>
+                <h2 class="text-xl font-bold text-white tracking-wider">RED WINTER</h2>
+                <p class="text-xs text-brand-cyan font-mono">ROYAL CENTRAL ACADEMY AUTHENTICATION</p>
+                <p class="text-xs text-brand-textMuted">벨루미아 왕국 왕립 중앙 아카데미 학적 포털</p>
+            </div>
+
+            <!-- Tab Switcher (Login / Register) -->
+            <div class="flex border-b border-brand-border">
+                <button type="button" onclick="switchAuthTab('login')" id="tab-auth-login" class="flex-1 py-2 text-xs font-bold border-b-2 border-brand-accent text-brand-cyan">로그인</button>
+                <button type="button" onclick="switchAuthTab('register')" id="tab-auth-register" class="flex-1 py-2 text-xs font-bold border-b-2 border-transparent text-brand-textMuted hover:text-white">신규 학생 등록 (회원가입)</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="form-login" onsubmit="handleAuthLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted mb-1">학적 이메일 주소</label>
+                    <input type="email" id="login-email" required placeholder="student@academy.rw" class="w-full px-3 me-2 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted mb-1">비밀번호</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-brand-accent hover:bg-brand-hover text-white font-bold text-xs rounded-lg transition-all shadow-lg shadow-blue-500/20">
+                    아카데미 포털 접속하기
+                </button>
+            </form>
+
+            <!-- Register Form (Hidden by default) -->
+            <form id="form-register" onsubmit="handleAuthRegister(event)" class="space-y-3 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted mb-1">학생 이름 (사용자명)</label>
+                    <input type="text" id="reg-name" required placeholder="예: 시리우스 폰 벨루미아" class="w-full px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted mb-1">이메일 주소</label>
+                    <input type="email" id="reg-email" required placeholder="student@academy.rw" class="w-full px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted mb-1">비밀번호</label>
+                    <input type="password" id="reg-password" required placeholder="8자리 이상 입력" class="w-full px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all shadow-lg shadow-emerald-500/20">
+                    신규 입학생 등록 완료
+                </button>
+            </form>
+
+            <div class="text-center pt-2">
+                <button type="button" onclick="bypassAuthGuest()" class="text-[11px] text-brand-textMuted hover:text-brand-cyan underline">게스트 모드로 세계관 바로 둘러보기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Header -->
+    <div class="md:hidden flex items-center justify-between p-4 bg-brand-card border-b border-brand-border sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded bg-brand-accent flex items-center justify-center font-bold text-white text-sm">RW</div>
+            <div>
+                <h1 class="font-bold text-sm tracking-wider text-white">RED WINTER</h1>
+                <p class="text-[10px] text-brand-cyan">ROYAL CENTRAL ACADEMY</p>
+            </div>
+        </div>
+        <button id="mobile-menu-btn" class="p-2 text-brand-textMuted hover:text-white">
+            <i data-lucide="menu"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="w-full md:w-64 bg-brand-card border-r border-brand-border flex flex-col flex-shrink-0 hidden md:flex min-h-screen">
+        <!-- Brand Header -->
+        <div class="p-6 border-b border-brand-border">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-blue-500/20">
+                    RW
+                </div>
+                <div>
+                    <h1 class="font-bold text-base tracking-wider text-white">RED WINTER</h1>
+                    <p class="text-xs text-brand-cyan font-medium">WORLD ARCHIVE 2026</p>
+                </div>
+            </div>
+            <p class="text-xs text-brand-textMuted mt-3">벨루미아 왕국 왕립 중앙 아카데미 공식 웹 아카이브</p>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <div class="px-3 py-2 text-[11px] font-semibold text-brand-textMuted uppercase tracking-wider">Navigation</div>
+            
+            <button onclick="switchTab('world')" id="nav-world" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-white bg-brand-accent/20 border border-brand-accent/40">
+                <i data-lucide="globe" class="w-4 h-4 text-brand-cyan"></i>
+                <span>세계관 탐색</span>
+            </button>
+
+            <button onclick="switchTab('academy')" id="nav-academy" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-textMuted hover:text-white hover:bg-brand-panel transition-all">
+                <i data-lucide="landmark" class="w-4 h-4"></i>
+                <span>아카데미 안내</span>
+            </button>
+
+            <button onclick="switchTab('character')" id="nav-character" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-textMuted hover:text-white hover:bg-brand-panel transition-all">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span>학생 캐릭터 & 상태</span>
+                <span id="char-count-badge" class="ml-auto text-xs px-2 py-0.5 rounded-full bg-brand-panel text-brand-cyan border border-brand-border">0</span>
+            </button>
+
+            <button onclick="switchTab('investigate')" id="nav-investigate" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-textMuted hover:text-white hover:bg-brand-panel transition-all">
+                <i data-lucide="compass" class="w-4 h-4 text-amber-400"></i>
+                <span class="text-amber-400 font-semibold">지역 조사 & 탐사</span>
+            </button>
+
+            <button onclick="switchTab('chat')" id="nav-chat" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-textMuted hover:text-white hover:bg-brand-panel transition-all">
+                <i data-lucide="messages-square" class="w-4 h-4 text-purple-400"></i>
+                <span class="text-purple-300 font-semibold">실시간 학부 채팅방</span>
+            </button>
+
+            <button onclick="switchTab('community')" id="nav-community" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-textMuted hover:text-white hover:bg-brand-panel transition-all">
+                <i data-lucide="message-square" class="w-4 h-4"></i>
+                <span>학생 게시판</span>
+            </button>
+
+            <div class="pt-4 px-3 py-2 text-[11px] font-semibold text-brand-textMuted uppercase tracking-wider">Deploy & Status</div>
+
+            <button onclick="switchTab('deploy')" id="nav-deploy" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-textMuted hover:text-white hover:bg-brand-panel transition-all">
+                <i data-lucide="rocket" class="w-4 h-4 text-emerald-400"></i>
+                <span class="text-emerald-400 font-bold">배포 및 DB 연동 상태</span>
+            </button>
+        </nav>
+
+        <!-- Sidebar Footer Status -->
+        <div class="p-4 border-t border-brand-border bg-brand-bg/50">
+            <div class="flex items-center space-x-2 text-xs text-brand-textMuted">
+                <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i>
+                <span>상태: <strong class="text-emerald-400">Supabase DB 실시간 연동 중</strong></span>
+            </div>
+            <p class="text-[11px] text-brand-textMuted mt-1">ID: lwomwtpybehqiacuaicz</p>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 bg-brand-bg overflow-y-auto">
+
+        <!-- Top Header Bar -->
+        <header class="hidden md:flex items-center justify-between px-8 py-4 border-b border-brand-border bg-brand-card/30 backdrop-blur">
+            <div class="flex items-center space-x-3">
+                <span class="text-xs font-mono text-brand-cyan bg-blue-950/60 px-2.5 py-1 rounded border border-blue-800/40">WORLD SYSTEM v2.6</span>
+                <span class="text-xs text-brand-textMuted">|</span>
+                <span class="text-xs text-brand-textMuted">ROYAL CENTRAL ACADEMY DATABASE</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 text-xs text-brand-textMuted">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span id="db-status-text">Supabase DB 연결 상태 정상</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Body -->
+        <div class="p-4 md:p-8 max-w-7xl w-full mx-auto space-y-8">
+
+            <!-- TAB 1: WORLD ARCHIVE -->
+            <section id="tab-world" class="tab-content space-y-6">
+                <div class="border-b border-brand-border pb-4">
+                    <h2 class="text-2xl font-bold text-white">WORLD ARCHIVE</h2>
+                    <p class="text-sm text-brand-textMuted mt-1">RED WINTER 세계관 4대 국가 및 세계 정보</p>
+                </div>
+
+                <!-- Nation Selector Buttons -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button id="nation-btn-velumia" onclick="selectNation('velumia')" class="nation-btn p-3 rounded-lg border text-xs font-semibold transition-all flex items-center justify-center space-x-2">
+                        <span>벨루미아 왕국</span>
+                    </button>
+                    <button id="nation-btn-arcanum" onclick="selectNation('arcanum')" class="nation-btn p-3 rounded-lg border text-xs font-semibold transition-all flex items-center justify-center space-x-2">
+                        <span>아르카넘 공화국</span>
+                    </button>
+                    <button id="nation-btn-ecclesia" onclick="selectNation('ecclesia')" class="nation-btn p-3 rounded-lg border text-xs font-semibold transition-all flex items-center justify-center space-x-2">
+                        <span>에클레시아 성국</span>
+                    </button>
+                    <button id="nation-btn-lumen" onclick="selectNation('lumen')" class="nation-btn p-3 rounded-lg border text-xs font-semibold transition-all flex items-center justify-center space-x-2">
+                        <span>루멘 해상연맹</span>
+                    </button>
+                </div>
+
+                <!-- Nation Detail Display Panel -->
+                <div id="nation-detail-panel" class="bg-brand-card border border-brand-border rounded-xl p-6 space-y-4">
+                    <!-- Populated dynamically via selectNation() -->
+                </div>
+            </section>
+
+            <!-- TAB: INVESTIGATION (조사 시스템) -->
+            <section id="tab-investigate" class="tab-content hidden space-y-6">
+                <div class="border-b border-brand-border pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="compass" class="text-amber-400"></i>
+                            <span>아카데미 & 에르덴 지역 조사</span>
+                        </h2>
+                        <p class="text-sm text-brand-textMuted mt-1">지정한 지역을 탐사하고 이성(Sanity) 및 상태 이상 위험을 감수하여 비밀을 발굴합니다.</p>
+                    </div>
+                </div>
+
+                <!-- Locations Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-3 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+                        <div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-brand-cyan border border-blue-800">위험도: 안전</span>
+                            <h3 class="text-base font-bold text-white mt-2">헬리오스 대도서관 금서 구역</h3>
+                            <p class="text-xs text-brand-textMuted mt-1 leading-relaxed">고대 주문서와 교단의 기밀 기록이 보관된 구역. 마법 해독 능력이 요구됩니다.</p>
+                        </div>
+                        <button onclick="startInvestigation('대도서관 금서 구역', 'safe')" class="w-full py-2 bg-brand-panel hover:bg-amber-600 hover:text-white border border-brand-border text-xs font-semibold text-amber-400 rounded-lg transition-all flex items-center justify-center space-x-1">
+                            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                            <span>조사 개시 (이성 -5)</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-3 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+                        <div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">위험도: 주의</span>
+                            <h3 class="text-base font-bold text-white mt-2">에르덴 연금술 폐기장</h3>
+                            <p class="text-xs text-brand-textMuted mt-1 leading-relaxed">시약 부산물로 인해 이상 마력 안개가 자욱한 구역. 마력 폭주 위험성이 높습니다.</p>
+                        </div>
+                        <button onclick="startInvestigation('연금술 폐기장', 'warning')" class="w-full py-2 bg-brand-panel hover:bg-amber-600 hover:text-white border border-brand-border text-xs font-semibold text-amber-400 rounded-lg transition-all flex items-center justify-center space-x-1">
+                            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                            <span>조사 개시 (이성 -15)</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-3 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+                        <div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-800">위험도: 극위험</span>
+                            <h3 class="text-base font-bold text-white mt-2">검은 숲 경계 구역</h3>
+                            <p class="text-xs text-brand-textMuted mt-1 leading-relaxed">아카데미 외곽 결계 너머의 미개척지. 학생 실종 사건이 빈번하게 발생하는 곳입니다.</p>
+                        </div>
+                        <button onclick="startInvestigation('검은 숲 경계', 'danger')" class="w-full py-2 bg-brand-panel hover:bg-red-600 hover:text-white border border-brand-border text-xs font-semibold text-red-400 rounded-lg transition-all flex items-center justify-center space-x-1">
+                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                            <span>조사 개시 (이성 -30 / 실종 위험)</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-3 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+                        <div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-400 border border-indigo-800">위험도: 특수</span>
+                            <h3 class="text-base font-bold text-white mt-2">지하 결계 연무장</h3>
+                            <p class="text-xs text-brand-textMuted mt-1 leading-relaxed">고대 기사단의 수련터. 신체 강화와 실전 감각을 끌어올릴 수 있습니다.</p>
+                        </div>
+                        <button onclick="startInvestigation('지하 결계 연무장', 'special')" class="w-full py-2 bg-brand-panel hover:bg-indigo-600 hover:text-white border border-brand-border text-xs font-semibold text-indigo-300 rounded-lg transition-all flex items-center justify-center space-x-1">
+                            <i data-lucide="sword" class="w-3.5 h-3.5"></i>
+                            <span>훈련 & 조사 (이성 -10)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Investigation Log Terminal -->
+                <div class="bg-brand-card border border-brand-border rounded-xl p-6 space-y-3">
+                    <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                        <i data-lucide="terminal" class="w-4 h-4 text-amber-400"></i>
+                        <span>실시간 지역 조사 기록 (Investigation Log)</span>
+                    </h3>
+                    <div id="investigation-logs" class="bg-brand-bg p-4 rounded-lg font-mono text-xs text-brand-textMuted space-y-2 h-48 overflow-y-auto border border-brand-border">
+                        <div class="text-emerald-400">[SYSTEM] 지역 조사를 수행할 캐릭터를 선택하고 탐사를 시작하세요.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: CHAT ROOMS (실시간 채팅) -->
+            <section id="tab-chat" class="tab-content hidden space-y-6">
+                <div class="border-b border-brand-border pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="messages-square" class="text-purple-400"></i>
+                            <span>아카데미 실시간 통신 채널</span>
+                        </h2>
+                        <p class="text-sm text-brand-textMuted mt-1">학생 및 기숙사 간의 실시간 메시지 교환 공간입니다.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <select id="chat-channel-select" class="px-3 py-1.5 rounded-lg bg-brand-card border border-brand-border text-xs text-white focus:outline-none focus:border-purple-500">
+                            <option value="general">전체 학생 채널</option>
+                            <option value="magic">마법학부 연구실</option>
+                            <option value="knight">검술학부 연무장</option>
+                            <option value="theology">신학부 성당</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Chat Box UI -->
+                <div class="bg-brand-card border border-brand-border rounded-xl p-4 flex flex-col h-[500px]">
+                    <div id="chat-messages-container" class="flex-1 overflow-y-auto space-y-3 p-2 font-sans text-xs">
+                        <div class="p-3 rounded-lg bg-brand-panel/60 border border-brand-border/60 text-brand-textMuted">
+                            <strong class="text-purple-400 font-mono">[COMMUNICATION LOG]</strong> 아카데미 통신 채널에 접속했습니다.
+                        </div>
+                    </div>
+
+                    <form onsubmit="handleSendChatMessage(event)" class="pt-3 border-t border-brand-border flex gap-2">
+                        <select id="chat-sender-select" class="px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none max-w-[150px]">
+                            <!-- Dynamically loaded -->
+                        </select>
+                        <input type="text" id="chat-input-text" required placeholder="메시지를 입력하세요..." class="flex-1 px-4 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-purple-500">
+                        <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-lg transition-all flex items-center space-x-1">
+                            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                            <span>전송</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 2: ACADEMY INFO -->
+            <section id="tab-academy" class="tab-content hidden space-y-6">
+                <div class="border-b border-brand-border pb-4">
+                    <h2 class="text-2xl font-bold text-white">ROYAL CENTRAL ACADEMY</h2>
+                    <p class="text-sm text-brand-textMuted mt-1">벨루미아 왕국 왕립 중앙 아카데미 학부 및 시설 수칙 안내</p>
+                </div>
+
+                <!-- Faculties Section -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-brand-card border border-brand-border rounded-xl p-6 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-blue-900/50 border border-blue-500/30 flex items-center justify-center text-brand-cyan">
+                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">신학부 (Theology)</h3>
+                        <p class="text-xs text-brand-textMuted leading-relaxed">
+                            태양신 헬리오스의 교리와 고대 정화 신성 마법을 탐구합니다. 대륙 전역의 치유와 제의를 담당하는 인재를 양성합니다.
+                        </p>
+                        <div class="pt-2 text-xs font-mono text-brand-cyan">주요 과목: 신성어 해석학, 정화 주문론</div>
+                    </div>
+
+                    <div class="bg-brand-card border border-brand-border rounded-xl p-6 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-900/50 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                            <i data-lucide="wand-2" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">마법학부 (Arcane Magic)</h3>
+                        <p class="text-xs text-brand-textMuted leading-relaxed">
+                            원소 마학, 연금술, 고대 문자 해석을 다룹니다. 엄격한 실기 시험을 통해 마법 수련 자격을 부여합니다.
+                        </p>
+                        <div class="pt-2 text-xs font-mono text-indigo-400">주요 과목: 원소 수인 연쇄, 마력 응용 이론</div>
+                    </div>
+
+                    <div class="bg-brand-card border border-brand-border rounded-xl p-6 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-600 flex items-center justify-center text-slate-300">
+                            <i data-lucide="sword" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">검술학부 (Swordsmanship)</h3>
+                        <p class="text-xs text-brand-textMuted leading-relaxed">
+                            전술 기사도, 실전 검술, 신체 강화 기술을 훈련합니다. 중앙 아카데미 수호대의 핵심 전력을 형성합니다.
+                        </p>
+                        <div class="pt-2 text-xs font-mono text-slate-300">주요 과목: 실전 기사 검술, 제형 대형 전술</div>
+                    </div>
+                </div>
+
+                <!-- Facilities & Rules -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-brand-card border border-brand-border rounded-xl p-6 space-y-4">
+                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                            <i data-lucide="building-2" class="w-4 h-4 text-brand-cyan"></i>
+                            <span>에르덴 마을 & 캠퍼스 주요 시설</span>
+                        </h3>
+                        <ul class="space-y-3 text-xs text-brand-textLight">
+                            <li class="p-3 bg-brand-panel rounded-lg border border-brand-border">
+                                <strong class="text-white block mb-1">중앙 대도서관 (Helios Archive)</strong>
+                                대륙 최대 규모의 고서적과 마법서 보관소.
+                            </li>
+                            <li class="p-3 bg-brand-panel rounded-lg border border-brand-border">
+                                <strong class="text-white block mb-1">에르덴 상업 지구</strong>
+                                연금술 재료, 맞춤형 제복, 장비 수리점이 집중된 마을.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-brand-card border border-brand-border rounded-xl p-6 space-y-4">
+                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                            <i data-lucide="scroll" class="w-4 h-4 text-brand-cyan"></i>
+                            <span>입학 규정 & 기숙사 수칙</span>
+                        </h3>
+                        <ul class="space-y-2.5 text-xs text-brand-textMuted list-disc list-inside leading-relaxed">
+                            <li><strong class="text-white">통금 시간:</strong> 매일 오후 10시 이후 기숙사 외출 금지</li>
+                            <li><strong class="text-white">마력 사용 제한:</strong> 지정된 연무장 외 공격 마법 사용 엄금</li>
+                            <li><strong class="text-white">학부 교류:</strong> 매 학기 통합 전술 평가전 필수 참가</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: STUDENT CHARACTERS -->
+            <section id="tab-character" class="tab-content hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-brand-border pb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">학생 캐릭터 관리 (DB 연동)</h2>
+                        <p class="text-sm text-brand-textMuted mt-1">Supabase DB에 저장된 실시간 캐릭터 목록</p>
+                    </div>
+                    <button onclick="openCharacterModal()" class="px-4 py-2 rounded-lg bg-brand-accent hover:bg-brand-hover text-white font-semibold text-sm flex items-center space-x-2 transition-all">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        <span>새 캐릭터 등록</span>
+                    </button>
+                </div>
+
+                <!-- Character Cards Grid -->
+                <div id="character-list-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            </section>
+
+            <!-- TAB 4: COMMUNITY BOARD -->
+            <section id="tab-community" class="tab-content hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-brand-border pb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">학생 커뮤니티 게시판 (DB 연동)</h2>
+                        <p class="text-sm text-brand-textMuted mt-1">모든 유저가 작성한 게시글이 실시간 공유됩니다</p>
+                    </div>
+                    <button onclick="openPostModal()" class="px-4 py-2 rounded-lg bg-brand-accent hover:bg-brand-hover text-white font-semibold text-sm flex items-center space-x-2 transition-all">
+                        <i data-lucide="square-pen" class="w-4 h-4"></i>
+                        <span>게시글 작성</span>
+                    </button>
+                </div>
+
+                <!-- Posts List -->
+                <div id="posts-container" class="space-y-4">
+                </div>
+            </section>
+
+            <!-- TAB 5: STATUS & SETUP -->
+            <section id="tab-deploy" class="tab-content hidden space-y-6">
+                <div class="bg-gradient-to-r from-emerald-950/80 via-brand-card to-slate-900 border border-emerald-500/40 rounded-xl p-6 space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+    <!-- Application Script Logic -->
+    <script>
+        // Auth Portal Logic
+        // Investigation Logic
+        window.startInvestigation = function(locationName, dangerLevel) {
+            const logs = document.getElementById('investigation-logs');
+            if(!logs) return;
+
+            const charName = characters.length > 0 ? characters[0].name : "익명 탐사자";
+            let sanityLoss = 10;
+            let resultText = "";
+            let statusEffect = "정상";
+
+            if (dangerLevel === 'safe') {
+                sanityLoss = 5;
+                resultText = `[성공] ${locationName}에서 고대 교단의 비밀 기록 조각을 발견했습니다!`;
+            } else if (dangerLevel === 'warning') {
+                sanityLoss = 15;
+                resultText = `[주의] 시약 안개에 노출되어 정신력이 소모되었습니다. (연금술 시약 획득)`;
+                statusEffect = "마력 폭주 위험";
+            } else if (dangerLevel === 'danger') {
+                sanityLoss = 30;
+                const isMissing = Math.random() < 0.3;
+                if (isMissing) {
+                    resultText = `[경고!] ${charName} 학생이 검은 숲 깊은 곳에서 흔적도 없이 [실종(MISSING)] 되었습니다! 수색대가 필요합니다.`;
+                    statusEffect = "실종 (MISSING)";
+                } else {
+                    resultText = `[위험] 결계 수호 마물과 조우하여 부상을 입고 가까스로 탈출했습니다.`;
+                    statusEffect = "부상";
+                }
+            } else {
+                sanityLoss = 10;
+                resultText = `[수련] 연무장에서 신체 강화를 성공적으로 마쳤습니다.`;
+            }
+
+            const timeStr = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = statusEffect.includes("실종") ? "text-red-400 font-bold" : "text-amber-300";
+            logEntry.innerText = `[${timeStr}] <${charName}> ${locationName} 탐사 결과 ➔ ${resultText} (상태: ${statusEffect})`;
+            
+            logs.prepend(logEntry);
+        };
+
+        // Chat Logic
+        let chatMessages = [
+            { sender: "루시안 폰 벨루미아", text: "이번 주말 검술 수련회 참가자 명단 확인 부탁드립니다.", time: "10:14 AM" },
+            { sender: "엘레노아 아르카눔", text: "대도서관 금서 구역에 새로운 해독서가 입고되었습니다.", time: "10:15 AM" }
+        ];
+
+        window.renderChatMessages = function() {
+            const container = document.getElementById('chat-messages-container');
+            if(!container) return;
+            container.innerHTML = chatMessages.map(m => `
+                <div class="p-2.5 rounded-lg bg-brand-panel/80 border border-brand-border space-y-1">
+                    <div class="flex justify-between text-[11px]">
+                        <span class="font-bold text-brand-cyan">${m.sender}</span>
+                        <span class="text-brand-textMuted font-mono">${m.time}</span>
+                    </div>
+                    <p class="text-white text-xs">${m.text}</p>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        };
+
+        window.handleSendChatMessage = function(e) {
+            e.preventDefault();
+            const senderSelect = document.getElementById('chat-sender-select');
+            const inputText = document.getElementById('chat-input-text');
+            if(!inputText || !inputText.value.trim()) return;
+
+            const sender = senderSelect && senderSelect.value ? senderSelect.value : "학적 등록 학생";
+            const newMsg = {
+                sender: sender,
+                text: inputText.value.trim(),
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+
+            chatMessages.push(newMsg);
+            renderChatMessages();
+            inputText.value = '';
+        };
+
+        window.handleAuthLogin = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const modal = document.getElementById('auth-portal-modal');
+            modal.classList.add('hidden');
+            alert(`환영합니다, ${email} 학생! 아카데미 학적 등록이 확인되었습니다.`);
+        };
+
+        window.handleAuthRegister = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const modal = document.getElementById('auth-portal-modal');
+            modal.classList.add('hidden');
+            alert(`축하합니다! ${name} 학생의 신규 입학 등록이 성공적으로 처리되었습니다.`);
+        };
+
+        window.bypassAuthGuest = function() {
+            const modal = document.getElementById('auth-portal-modal');
+            modal.classList.add('hidden');
+        };
+
+        // World Tab Nation Data
+        const NATION_DATA = {
+            velumia: {
+                title: "벨루미아 왕국 (Kingdom of Velumia)",
+                badge: "절대왕정 · 태양신 교단 본산",
+                summary: "18~19세기 유럽풍의 왕정 사회. 왕권 중심의 전통 귀족 정치가 뿌리 깊으며 아카데미의 최대 후원국입니다.",
+                history: "대륙 중앙의 풍요로운 평야를 기반으로 번영했으며, 헬리오스 신학의 중심지입니다. 최근 산업화의 시작으로 정통 귀족층과 신흥 상인 계층 간의 미묘한 갈등이 시작되고 있습니다.",
+                culture: "기사도 정신과 신성 의식을 숭상하며, 정통 정복 및 검술 수련을 귀족의 필수 덕목으로 여깁니다."
+            },
+            arcanum: {
+                title: "아르카넘 공화국 (Arcanum Republic)",
+                badge: "마학 공화정 · 학술 연합",
+                summary: "마법 공학 및 학술 연구가 극도로 발달한 원소 마법의 성지입니다.",
+                history: "과거 마법사 대의원회가 왕정을 축출하고 수립한 공화국. 마력 자원의 효율적 배분과 마법 학문의 대중화를 목표로 합니다.",
+                culture: "신분보다는 마력 계측 수치와 학술 성과를 우선시하는 실용주의적 분위기가 지배적입니다."
+            },
+            ecclesia: {
+                title: "에클레시아 성국 (Ecclesia Holy State)",
+                badge: "신권 정치 · 이단 심문",
+                summary: "태양신 헬리오스의 정통 교리를 고수하는 엄격한 성국입니다.",
+                history: "대륙 북부의 험준한 산맥에 위치하여 마물의 침입을 방어해 온 정예 신성 기사단과 교황청 중심의 국가입니다.",
+                culture: "금욕주의와 신앙심을 강조하며, 신성 마법 및 이단 정화 기술 분야에서 압도적인 권위를 가집니다."
+            },
+            lumen: {
+                title: "루멘 해상연맹 (Lumen Maritime Alliance)",
+                badge: "자유 무역 · 연방제",
+                summary: "해상 무역과 금융업으로 대륙의 부를 지배하는 자유 연맹입니다.",
+                history: "7개 주요 항구 도시가 상호 방위 및 무역 협정을 체결하며 탄생한 거대 해상 정권입니다.",
+                culture: "다양한 문물이 교차하며 개방적이고 실리적인 성향이 강합니다. 연금술 및 특수 무기 거래가 활발합니다."
+            }
+        };
+
+        const CODE_FILES = {
+            sql: `-- Supabase SQL Editor에 그대로 붙여넣고 Run을 누르세요!
+CREATE TABLE characters (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    name TEXT NOT NULL,
+    nation TEXT NOT NULL,
+    faculty TEXT NOT NULL,
+    rank TEXT NOT NULL,
+    bio TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
+);
+
+CREATE TABLE posts (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    author TEXT NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    likes INT DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
+);`,
+            app_py: `<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
+<script>
+  const SUPABASE_URL = 'https://lwomwtpybehqiacuaicz.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_qJPSLAYMp-0FDklZa6xing_MKcnJ4Q_';
+  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+<\/script>`
+        };
+
+        let currentCodeKey = 'app_py';
+        let characters = [];
+        let posts = [];
+        let supabaseClient = null;
+
+        // Global functions exposed explicitly to window
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-accent/20', 'border', 'border-brand-accent/40', 'text-white');
+                btn.classList.add('text-brand-textMuted');
+            });
+
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-brand-accent/20', 'border', 'border-brand-accent/40', 'text-white');
+                activeNav.classList.remove('text-brand-textMuted');
+            }
+        };
+
+        window.selectNation = function(nationKey) {
+            const data = NATION_DATA[nationKey];
+            const panel = document.getElementById('nation-detail-panel');
+            if(!data || !panel) return;
+
+            document.querySelectorAll('.nation-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-accent', 'text-white', 'border-brand-accent');
+                btn.classList.add('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
+            });
+
+            const btn = document.getElementById(`nation-btn-${nationKey}`);
+            if(btn) {
+                btn.classList.add('bg-brand-accent', 'text-white', 'border-brand-accent');
+                btn.classList.remove('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
+            }
+
+            panel.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between items-start gap-2 border-b border-brand-border pb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-white">${data.title}</h3>
+                        <p class="text-xs text-brand-cyan font-mono mt-1">${data.badge}</p>
+                    </div>
+                </div>
+                <div class="space-y-4 text-xs leading-relaxed">
+                    <div>
+                        <strong class="text-white text-sm block mb-1">국가 개요</strong>
+                        <p class="text-brand-textLight">${data.summary}</p>
+                    </div>
+                    <div>
+                        <strong class="text-white text-sm block mb-1">역사 및 배경</strong>
+                        <p class="text-brand-textMuted">${data.history}</p>
+                    </div>
+                    <div>
+                        <strong class="text-white text-sm block mb-1">사회 문화적 특징</strong>
+                        <p class="text-brand-textMuted">${data.culture}</p>
+                    </div>
+                </div>
+            `;
+        };
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.lucide) lucide.createIcons();
+            
+            // Supabase client initialize check
+            if (typeof window.supabase !== 'undefined') {
+                const SUPABASE_URL = 'https://lwomwtpybehqiacuaicz.supabase.co';
+                const SUPABASE_ANON_KEY = 'sb_publishable_qJPSLAYMp-0FDklZa6xing_MKcnJ4Q_';
+                try {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    const statusText = document.getElementById('db-status-text');
+                    if (statusText) statusText.innerText = "Supabase DB 연결 성공 (실시간 연동)";
+                } catch(e) {
+                    console.warn("Supabase Init Fallback:", e);
+                }
+            }
+
+            selectNation('velumia');
+            await fetchCharactersFromDB();
+            await fetchPostsFromDB();
+
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            if (mobileBtn) {
+                mobileBtn.addEventListener('click', () => {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar) sidebar.classList.toggle('hidden');
+                });
+            }
+
+            if (typeof renderChatMessages === 'function') renderChatMessages();
+            showCodeTab('app_py');
+        });
+
+        // Render Character Cards
+        window.renderCharacters = function() {
+            const grid = document.getElementById('character-list-grid');
+            const badgeCount = document.getElementById('char-count-badge');
+            if (badgeCount) badgeCount.innerText = characters.length;
+            if (!grid) return;
+
+            if (characters.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-brand-textMuted text-xs">등록된 학생 캐릭터가 없습니다. 새 캐릭터를 등록해 보세요.</div>`;
+                return;
+            }
+
+            grid.innerHTML = characters.map(c => `
+                <div class="bg-brand-card border border-brand-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-brand-accent/50 transition-all">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-brand-panel text-brand-cyan border border-brand-border">${c.faculty || '일반'}</span>
+                            <button onclick="deleteCharacter(${c.id})" class="text-brand-textMuted hover:text-red-400 text-xs"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">${c.name}</h3>
+                        <p class="text-xs text-brand-cyan font-medium">${c.nation || '속성 미지정'} · ${c.rank || '학생'}</p>
+                        <p class="text-xs text-brand-textMuted leading-relaxed pt-2 border-t border-brand-border/60">${c.bio || '등록된 프로필 내용이 없습니다.'}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            if (window.lucide) lucide.createIcons();
+            if (typeof updateAuthorDropdown === 'function') updateAuthorDropdown();
+        };
+
+        // Fetch Characters
+        async function fetchCharactersFromDB() {
+            if (!supabaseClient) {
+                characters = JSON.parse(localStorage.getItem('rw_characters')) || [
+                    { id: 1, name: "루시안 폰 벨루미아", nation: "벨루미아 왕국", faculty: "검술학부", rank: "3학년", bio: "왕국의 기사 가문 출신.", status: "정상 (Active)" },
+                    { id: 2, name: "엘레노아 아르카눔", nation: "아르카넘 공화국", faculty: "마법학부", rank: "2학년", bio: "원소 마법의 천재.", status: "정상 (Active)" }
+                ];
+                renderCharacters();
+                return;
+            }
+            try {
+                const { data, error } = await supabaseClient.from('characters').select('*').order('id', { ascending: false });
+                if (!error && data && data.length > 0) {
+                    characters = data;
+                } else {
+                    characters = JSON.parse(localStorage.getItem('rw_characters')) || [];
+                }
+            } catch (err) {
+                characters = JSON.parse(localStorage.getItem('rw_characters')) || [];
+            }
+            renderCharacters();
+        }
+
+        // Fetch Posts
+        async function fetchPostsFromDB() {
+            if (!supabaseClient) {
+                posts = JSON.parse(localStorage.getItem('rw_posts')) || [
+                    { id: 1, author: "루시안 폰 벨루미아", title: "실전 연무장 수련원 모집합니다", content: "검술학부 대련 모임입니다.", likes: 3, created_at: new Date().toISOString() }
+                ];
+                renderPosts();
+                return;
+            }
+            try {
+                const { data, error } = await supabaseClient.from('posts').select('*').order('id', { ascending: false });
+                if (!error && data && data.length > 0) {
+                    posts = data;
+                } else {
+                    posts = JSON.parse(localStorage.getItem('rw_posts')) || [];
+                }
+            } catch (err) {
+                posts = JSON.parse(localStorage.getItem('rw_posts')) || [];
+            }
+            renderPosts();
+        }
+
+        // World Tab
+        window.selectNation = function(nationKey) {
+            const data = NATION_DATA[nationKey];
+            const panel = document.getElementById('nation-detail-panel');
+            if(!data || !panel) return;
+
+            document.querySelectorAll('.nation-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-accent', 'text-white', 'border-brand-accent');
+                btn.classList.add('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
+            });
+
+            const btn = document.getElementById(`nation-btn-${nationKey}`);
+            if(btn) {
+                btn.classList.add('bg-brand-accent', 'text-white', 'border-brand-accent');
+                btn.classList.remove('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
+            }
+
+            panel.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between items-start gap-2 border-b border-brand-border pb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-white">${data.title}</h3>
+                        <p class="text-xs text-brand-cyan font-mono mt-1">${data.badge}</p>
+                    </div>
+                </div>
+                <div class="space-y-4 text-xs leading-relaxed">
+                    <div>
+                        <strong class="text-white text-sm block mb-1">국가 개요</strong>
+                        <p class="text-brand-textLight">${data.summary}</p>
+                    </div>
+                    <div>
+                        <strong class="text-white text-sm block mb-1">역사 및 배경</strong>
+                        <p class="text-brand-textMuted">${data.history}</p>
+                    </div>
+                    <div>
+                        <strong class="text-white text-sm block mb-1">사회 문화적 특징</strong>
+                        <p class="text-brand-textMuted">${data.culture}</p>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.openCharacterModal = function() { const m = document.getElementById('char-modal'); if (m) m.classList.remove('hidden'); };
+        window.closeCharacterModal = function() { const m = document.getElementById('char-modal'); if (m) m.classList.add('hidden'); const f = document.getElementById('char-form'); if (f) f.reset(); };
+
+        window.handleSaveCharacter = async function(e) {
+            e.preventDefault();
+            const newChar = {
+                name: document.getElementById('char-name').value,
+                nation: document.getElementById('char-nation').value,
+                faculty: document.getElementById('char-faculty').value,
+                rank: document.getElementById('char-rank').value,
+                bio: document.getElementById('char-bio').value
+            };
+
+            if (supabaseClient) {
+                await supabaseClient.from('characters').insert([newChar]);
+                await fetchCharactersFromDB();
+            } else {
+                newChar.id = Date.now();
+                characters.unshift(newChar);
+                localStorage.setItem('rw_characters', JSON.stringify(characters));
+                renderCharacters();
+            }
+            closeCharacterModal();
+        };
+
+        window.deleteCharacter = async function(id) {
+            if (supabaseClient) {
+                await supabaseClient.from('characters').delete().eq('id', id);
+                await fetchCharactersFromDB();
+            } else {
+                characters = characters.filter(c => c.id !== id);
+                localStorage.setItem('rw_characters', JSON.stringify(characters));
+                renderCharacters();
+            }
+        };
+
+        // Community Board
+        window.renderPosts = function() {
+            const container = document.getElementById('posts-container');
+            if (!container) return;
+            if (posts.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-brand-textMuted text-xs">작성된 게시글이 없습니다.</div>`;
+                return;
+            }
+
+            container.innerHTML = posts.map(p => `
+                <div class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-7 h-7 rounded-full bg-brand-accent/20 border border-brand-accent flex items-center justify-center text-xs text-brand-cyan font-bold">
+                                ${p.author ? p.author.substring(0, 1) : '학생'}
+                            </div>
+                            <span class="text-xs font-semibold text-white">${p.author}</span>
+                        </div>
+                        <span class="text-[11px] font-mono text-brand-textMuted">${p.created_at ? new Date(p.created_at).toLocaleDateString() : '2026-10-30'}</span>
+                    </div>
+                    <h3 class="text-base font-bold text-white">${p.title}</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed">${p.content}</p>
+                    <div class="flex items-center space-x-4 pt-2 border-t border-brand-border text-xs text-brand-textMuted">
+                        <button onclick="likePost(${p.id}, ${p.likes || 0})" class="flex items-center space-x-1 hover:text-brand-cyan">
+                            <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
+                            <span>좋아요 ${p.likes || 0}</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            if (window.lucide) lucide.createIcons();
+        };
+
+        function updateAuthorDropdown() {
+            const select = document.getElementById('post-author');
+            if (!select) return;
+            if(characters.length === 0) {
+                select.innerHTML = `<option value="익명 학생">익명 학생</option>`;
+                return;
+            }
+            select.innerHTML = characters.map(c => `<option value="${c.name}">${c.name} (${c.faculty})</option>`).join('');
+        }
+
+        window.openPostModal = function() { updateAuthorDropdown(); const m = document.getElementById('post-modal'); if (m) m.classList.remove('hidden'); };
+        window.closePostModal = function() { const m = document.getElementById('post-modal'); if (m) m.classList.add('hidden'); const f = document.getElementById('post-form'); if (f) f.reset(); };
+
+        window.handleSavePost = async function(e) {
+            e.preventDefault();
+            const newPost = {
+                author: document.getElementById('post-author').value,
+                title: document.getElementById('post-title').value,
+                content: document.getElementById('post-content').value,
+                likes: 0
+            };
+
+            if (supabaseClient) {
+                await supabaseClient.from('posts').insert([newPost]);
+                await fetchPostsFromDB();
+            } else {
+                newPost.id = Date.now();
+                newPost.created_at = new Date().toISOString();
+                posts.unshift(newPost);
+                localStorage.setItem('rw_posts', JSON.stringify(posts));
+                renderPosts();
+            }
+            closePostModal();
+        };
+
+        window.likePost = async function(id, currentLikes) {
+            if (supabaseClient) {
+                await supabaseClient.from('posts').update({ likes: currentLikes + 1 }).eq('id', id);
+                await fetchPostsFromDB();
+            } else {
+                const p = posts.find(post => post.id === id);
+                if(p) {
+                    p.likes = (p.likes || 0) + 1;
+                    localStorage.setItem('rw_posts', JSON.stringify(posts));
+                    renderPosts();
+                }
+            }
+        };
+
+        window.showCodeTab = function(key) {
+            currentCodeKey = key;
+            document.querySelectorAll('.code-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-accent', 'text-white', 'border-brand-accent');
+                btn.classList.add('bg-brand-panel', 'text-brand-textMuted', 'border-brand-border');
+            });
+
+            const activeBtn = document.getElementById(`code-btn-${key}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-brand-accent', 'text-white', 'border-brand-accent');
+                activeBtn.classList.remove('bg-brand-panel', 'text-brand-textMuted', 'border-brand-border');
+            }
+
+            const disp = document.getElementById('code-display');
+            if (disp && CODE_FILES[key]) disp.innerText = CODE_FILES[key];
+        };
+
+        window.copyCurrentCode = function() {
+            const codeText = CODE_FILES[currentCodeKey];
+            if (!codeText) return;
+            const textArea = document.createElement("textarea");
+            textArea.value = codeText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+
+            const label = document.getElementById('copy-text');
+            if (label) {
+                label.innerText = "복사 완료!";
+                setTimeout(() => { label.innerText = "코드 복사"; }, 2000);
+            }
+        };
+    </script>
+</body>
+</html>
