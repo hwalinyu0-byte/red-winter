@@ -17,7 +17,7 @@
 </head>
 <body class="h-screen overflow-hidden flex flex-col bg-slate-950 text-slate-100">
 
-  <!-- BGM AUDIO PLAYER (판타지 아카데미 배경음악) -->
+  <!-- BGM AUDIO PLAYER -->
   <audio id="bgm-player" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=fantasy-orchestral-112893.mp3"></audio>
 
   <!-- AUTH MODAL -->
@@ -47,7 +47,7 @@
 
       <form id="auth-register-form" onsubmit="window.handleAuthRegister(event)" class="space-y-4 hidden">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">학생 이름 (본인 작성자 표기용)</label>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">학생 이름</label>
           <input type="text" id="reg-name" required placeholder="예: 시리우스" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
         <div>
@@ -133,7 +133,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-xl font-fantasy text-sky-400 font-bold">학생 명부 & 인연 관계도</h2>
-            <p class="text-xs text-slate-400">내 계정으로 생성한 캐릭터만 '수정' 버튼이 활성화되어 프로필을 고칠 수 있습니다.</p>
+            <p class="text-xs text-slate-400">로그인한 계정으로 등록한 본인 캐릭터만 프로필 수정 권한이 부여됩니다.</p>
           </div>
           <button type="button" onclick="window.openCharacterModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-blue-600/30">
             + 신규 학생 등록
@@ -147,29 +147,29 @@
       <section id="tab-investigate" class="tab-content hidden space-y-6">
         <div class="glass-card p-6 rounded-xl border border-sky-500/30">
           <h2 class="text-xl font-fantasy text-sky-400 font-bold mb-2">아카데미 외곽 위험 탐사</h2>
-          <p class="text-xs text-slate-400 mb-6">위험 구역 탐사 시 높은 확률로 부상 및 실종(MISSING) 상태가 발생합니다.</p>
+          <p class="text-xs text-slate-400 mb-6">위험 구역 탐사 시 확률에 따라 부상 및 실종(MISSING) 상태가 발생합니다.</p>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="p-4 rounded-lg bg-slate-900 border border-sky-900/40 flex flex-col justify-between h-44">
               <div>
                 <h3 class="font-bold text-slate-200 text-sm">헬리오스 도서관 지하 서고</h3>
-                <p class="text-xs text-slate-400 mt-1">위험도: ★☆☆ | 실종 확률 5%</p>
+                <p class="text-xs text-slate-400 mt-1">위험도: ★☆☆ | 실종 확률 10%</p>
               </div>
-              <button type="button" onclick="window.startInvestigation('헬리오스 지하 서고', 0.05)" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded transition border border-sky-700/50">조사 시작</button>
+              <button type="button" onclick="window.startInvestigation('헬리오스 지하 서고', 0.10)" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded transition border border-sky-700/50">조사 시작</button>
             </div>
             <div class="p-4 rounded-lg bg-slate-900 border border-sky-900/40 flex flex-col justify-between h-44">
               <div>
                 <h3 class="font-bold text-slate-200 text-sm">금지된 북부 삼림</h3>
-                <p class="text-xs text-slate-400 mt-1">위험도: ★★☆ | 실종 확률 15%</p>
+                <p class="text-xs text-slate-400 mt-1">위험도: ★★☆ | 실종 확률 25%</p>
               </div>
-              <button type="button" onclick="window.startInvestigation('금지된 북부 삼림', 0.15)" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded transition border border-sky-700/50">조사 시작</button>
+              <button type="button" onclick="window.startInvestigation('금지된 북부 삼림', 0.25)" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded transition border border-sky-700/50">조사 시작</button>
             </div>
             <div class="p-4 rounded-lg bg-slate-900 border border-sky-900/40 flex flex-col justify-between h-44">
               <div>
                 <h3 class="font-bold text-rose-300 text-sm">봉인된 혹한의 탑 (고위험)</h3>
-                <p class="text-xs text-slate-400 mt-1">위험도: ★★★ | 실종 확률 35%</p>
+                <p class="text-xs text-slate-400 mt-1">위험도: ★★★ | 실종 확률 45%</p>
               </div>
-              <button type="button" onclick="window.startInvestigation('봉인된 혹한의 탑', 0.35)" class="w-full py-2 bg-rose-950/70 hover:bg-rose-900 text-rose-300 font-semibold text-xs rounded transition border border-rose-800/50">조사 시작</button>
+              <button type="button" onclick="window.startInvestigation('봉인된 혹한의 탑', 0.45)" class="w-full py-2 bg-rose-950/70 hover:bg-rose-900 text-rose-300 font-semibold text-xs rounded transition border border-rose-800/50">조사 시작</button>
             </div>
           </div>
 
@@ -194,7 +194,6 @@
           </div>
           
           <div class="flex gap-2">
-            <!-- 귓속말 수신자 선택 (개인챗일 때 활성화) -->
             <select id="chat-dm-target-select" class="hidden bg-slate-900 border border-indigo-700 rounded text-xs px-2 py-1.5 text-indigo-300">
               <option value="">귓속말 상대 선택...</option>
             </select>
@@ -270,7 +269,7 @@
     </div>
   </div>
 
-  <!-- RELATIONSHIP MODAL (관계도 설정 모달) -->
+  <!-- RELATIONSHIP MODAL -->
   <div id="relation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card w-full max-w-md p-6 rounded-2xl border border-sky-500/40 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -282,9 +281,7 @@
         <input type="hidden" id="rel-from-id" value="">
         <div>
           <label class="block text-slate-400 font-semibold mb-1">대상 상대 캐릭터</label>
-          <select id="rel-target-id" required class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200">
-            <!-- Dynamic Select -->
-          </select>
+          <select id="rel-target-id" required class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200"></select>
         </div>
         <div>
           <label class="block text-slate-400 font-semibold mb-1">관계 호칭 (예: 비밀 동맹, 숙명의 라이벌)</label>
@@ -330,7 +327,7 @@
 
   <!-- CORE SCRIPT -->
   <script>
-    var currentUser = null; // 현재 접속 사용자 계정
+    var currentUser = null;
     var characters = [
       { id: 'c1', owner: 'student@bellumia.edu', name: '시리우스 폰 로엔그린', house: '폰 로엔그린 자작가', rank: '2학년 수석', faculty: '마법학부', hp: 100, mp: 120, sanity: 100, status: '정상', gold: 150, image: '', relationships: [{ targetName: '엘리아', type: '라이벌', value: 75 }] },
       { id: 'c2', owner: 'other@bellumia.edu', name: '엘리아 디아나', house: '디아나 백작가', rank: '2학년', faculty: '신학부', hp: 100, mp: 100, sanity: 100, status: '정상', gold: 200, image: '', relationships: [] }
@@ -343,7 +340,6 @@
     ];
     var activeChannel = 'all';
 
-    // BGM 컨트롤
     window.toggleBGM = function() {
       var player = document.getElementById('bgm-player');
       var btn = document.getElementById('bgm-toggle-btn');
@@ -359,7 +355,6 @@
       document.getElementById('bgm-player').volume = val;
     };
 
-    // Auth 기능
     window.switchAuthTab = function(tab) {
       var loginForm = document.getElementById('auth-login-form');
       var regForm = document.getElementById('auth-register-form');
@@ -407,6 +402,7 @@
       currentUser = null;
       document.getElementById('current-user-display').textContent = '게스트';
       document.getElementById('auth-portal-modal').classList.remove('hidden');
+      window.renderCharacters();
     };
 
     window.switchTab = function(tabName) {
@@ -428,7 +424,6 @@
       }
     };
 
-    // 캐릭터 생성 및 수정 (본인 소유 제어)
     window.openCharacterModal = function(editId) {
       var modalTitle = document.getElementById('char-modal-title');
       var editInput = document.getElementById('char-edit-id');
@@ -472,7 +467,6 @@
 
       var saveAction = function(imgData) {
         if(editId) {
-          // 수정
           for(var i=0; i<characters.length; i++) {
             if(characters[i].id === editId) {
               characters[i].name = name;
@@ -484,7 +478,6 @@
             }
           }
         } else {
-          // 신규 등록 (현재 로그인한 계정을 소유자로 기록)
           var newChar = {
             id: 'c_' + Date.now(),
             owner: currentUser ? currentUser.email : 'guest',
@@ -510,16 +503,16 @@
       return false;
     };
 
-    // 캐릭터 카드 렌더링 (본인 소유 여부에 따른 수정 버튼 분기)
     window.renderCharacters = function() {
       var grid = document.getElementById('character-card-grid');
       if(!grid) return;
       var html = '';
       var userEmail = currentUser ? currentUser.email : '';
+      var userName = currentUser ? currentUser.name : '';
 
       for(var i=0; i<characters.length; i++) {
         var c = characters[i];
-        var isOwner = (userEmail && c.owner === userEmail);
+        var isOwner = userEmail && (c.owner === userEmail || c.owner === userName);
 
         var relHtml = '';
         if(c.relationships && c.relationships.length > 0) {
@@ -543,7 +536,7 @@
                 '<span class="inline-block text-[10px] px-1.5 py-0.5 rounded bg-blue-950 text-sky-300 border border-sky-800/40 mt-1">' + c.faculty + '</span>' +
               '</div>' +
             '</div>' +
-            (isOwner ? '<button type="button" onclick="window.openCharacterModal(\'' + c.id + '\')" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-200 text-[11px] rounded border border-sky-700">✏️ 수정</button>' : '') +
+            (isOwner ? '<button type="button" onclick="window.openCharacterModal(\'' + c.id + '\')" class="px-2.5 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-200 text-[11px] rounded border border-sky-700 font-semibold shadow">✏️ 수정</button>' : '<span class="text-[10px] text-slate-500 px-2 py-1">열람 전용</span>') +
           '</div>' +
           '<div class="grid grid-cols-3 gap-1 text-[11px] bg-slate-950 p-2 rounded border border-sky-900/40 text-center">' +
             '<div><span class="text-slate-500 block">생명력</span> <span class="text-rose-400 font-bold">' + c.hp + '</span></div>' +
@@ -565,7 +558,6 @@
       grid.innerHTML = html;
     };
 
-    // 관계도 모달
     window.openRelationModal = function(fromCharId) {
       document.getElementById('rel-from-id').value = fromCharId;
       var select = document.getElementById('rel-target-id');
@@ -599,7 +591,6 @@
       return false;
     };
 
-    // 탐사 기능 (실종 확률 조정)
     window.startInvestigation = function(area, missingChance) {
       var logBox = document.getElementById('investigation-log-box');
       if(!logBox) return;
@@ -620,7 +611,6 @@
       logBox.scrollTop = logBox.scrollHeight;
     };
 
-    // 채팅 기능 (학부 채팅 & 1:1 개인 귓속말)
     window.updateChatDropdown = function() {
       var select = document.getElementById('chat-as-character-select');
       var dmSelect = document.getElementById('chat-dm-target-select');
@@ -715,7 +705,6 @@
       container.scrollTop = container.scrollHeight;
     };
 
-    // 게시판 기능
     window.openPostModal = function() { document.getElementById('post-modal').classList.remove('hidden'); };
     window.closePostModal = function() { document.getElementById('post-modal').classList.add('hidden'); };
 
