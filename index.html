@@ -15,100 +15,100 @@
     
     body {
       font-family: 'Pretendard', sans-serif;
-      background-color: #0b0f19;
+      background-color: #060b19;
       color: #e2e8f0;
     }
     .font-fantasy { font-family: 'Cinzel', 'Noto Serif KR', serif; }
     .glass-card {
-      background: rgba(17, 24, 39, 0.75);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.15);
     }
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.8); border-radius: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(30, 58, 138, 0.8); border-radius: 3px; }
   </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col bg-slate-950 text-slate-100">
 
   <!-- AUTH MODAL (최초 접속 시 로그인 관문) -->
   <div id="auth-portal-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="glass-card w-full max-w-md p-6 rounded-2xl border border-amber-500/30 shadow-2xl relative">
+    <div class="glass-card w-full max-w-md p-6 rounded-2xl border border-sky-500/30 shadow-2xl relative">
       <div class="text-center mb-6">
-        <h1 class="text-3xl font-fantasy font-bold text-amber-400 tracking-wider">RED WINTER</h1>
-        <p class="text-xs text-slate-400 mt-1">왕립 벨루미아 아카데미 학적 통합 포털</p>
+        <h1 class="text-3xl font-fantasy font-bold text-sky-400 tracking-wider">RED WINTER</h1>
+        <p class="text-xs text-blue-300/70 mt-1">왕립 벨루미아 아카데미 학적 통합 포털</p>
       </div>
 
       <div class="flex border-b border-slate-700/60 mb-6">
-        <button onclick="window.switchAuthTab('login')" id="auth-tab-login" class="flex-1 py-2 font-semibold text-amber-400 border-b-2 border-amber-400 text-center transition">로그인</button>
-        <button onclick="window.switchAuthTab('register')" id="auth-tab-register" class="flex-1 py-2 font-semibold text-slate-400 text-center transition">신규 학적 등록</button>
+        <button type="button" onclick="window.switchAuthTab('login')" id="auth-tab-login" class="flex-1 py-2 font-semibold text-sky-400 border-b-2 border-sky-400 text-center transition">로그인</button>
+        <button type="button" onclick="window.switchAuthTab('register')" id="auth-tab-register" class="flex-1 py-2 font-semibold text-slate-400 text-center transition">신규 학적 등록</button>
       </div>
 
       <!-- 로그인 폼 -->
       <form id="auth-login-form" onsubmit="window.handleAuthLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">식별 이메일 / 계정</label>
-          <input type="email" id="login-email" required class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+          <input type="email" id="login-email" required class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">비밀번호</label>
-          <input type="password" id="login-password" required class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+          <input type="password" id="login-password" required class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
-        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-lg transition text-sm">아카데미 접속</button>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/30">아카데미 접속</button>
       </form>
 
       <!-- 회원가입 폼 -->
       <form id="auth-register-form" onsubmit="window.handleAuthRegister(event)" class="space-y-4 hidden">
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">학생/사용자 이름</label>
-          <input type="text" id="reg-name" required placeholder="예: 시리우스 폰 로엔그린" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+          <input type="text" id="reg-name" required placeholder="예: 시리우스 폰 로엔그린" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">등록 이메일</label>
-          <input type="email" id="reg-email" required class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+          <input type="email" id="reg-email" required class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">비밀번호</label>
-          <input type="password" id="reg-password" required class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+          <input type="password" id="reg-password" required class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
-        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-lg transition text-sm">학적 등록 신청</button>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/30">학적 등록 신청</button>
       </form>
     </div>
   </div>
 
   <!-- HEADER -->
-  <header class="h-14 border-b border-slate-800 bg-slate-900/80 px-4 flex items-center justify-between shrink-0">
+  <header class="h-14 border-b border-blue-900/40 bg-slate-900/90 px-4 flex items-center justify-between shrink-0">
     <div class="flex items-center gap-3">
-      <h1 class="font-fantasy text-xl font-bold text-amber-400 tracking-wider">RED WINTER</h1>
-      <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Royal Bellumia Academy</span>
+      <h1 class="font-fantasy text-xl font-bold text-sky-400 tracking-wider">RED WINTER</h1>
+      <span class="text-xs px-2 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-800/60">Royal Bellumia Academy</span>
     </div>
 
     <div class="flex items-center gap-4 text-xs">
-      <div id="db-status-badge" class="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-950/50 text-emerald-400 border border-emerald-800/40">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <div id="db-status-badge" class="flex items-center gap-1.5 px-2 py-1 rounded bg-sky-950/50 text-sky-400 border border-sky-800/40">
+        <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
         <span id="db-status-text">동기화 완료</span>
       </div>
       <span id="current-user-display" class="text-slate-300 font-semibold">게스트</span>
-      <button onclick="window.handleLogout()" class="text-slate-400 hover:text-rose-400 transition">로그아웃</button>
+      <button type="button" onclick="window.handleLogout()" class="text-slate-400 hover:text-rose-400 transition">로그아웃</button>
     </div>
   </header>
 
   <div class="flex-1 flex overflow-hidden">
     <!-- SIDEBAR NAVIGATION -->
-    <nav class="w-64 border-r border-slate-800 bg-slate-900/40 flex flex-col p-3 gap-1 shrink-0">
-      <button onclick="window.switchTab('lore')" id="nav-lore" class="nav-btn active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-amber-400 bg-amber-500/10 border border-amber-500/20">
+    <nav class="w-64 border-r border-blue-900/30 bg-slate-900/60 flex flex-col p-3 gap-1 shrink-0">
+      <button type="button" onclick="window.switchTab('lore')" id="nav-lore" class="nav-btn active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-sky-400 bg-sky-500/10 border border-sky-500/20">
         <i data-lucide="book-open" class="w-4 h-4"></i> 아카데미 가이드
       </button>
-      <button onclick="window.switchTab('characters')" id="nav-characters" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60">
+      <button type="button" onclick="window.switchTab('characters')" id="nav-characters" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60">
         <i data-lucide="users" class="w-4 h-4"></i> 학생 명부 (캐릭터)
       </button>
-      <button onclick="window.switchTab('investigate')" id="nav-investigate" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60">
+      <button type="button" onclick="window.switchTab('investigate')" id="nav-investigate" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60">
         <i data-lucide="compass" class="w-4 h-4"></i> 지역 조사 & 탐사
       </button>
-      <button onclick="window.switchTab('chat')" id="nav-chat" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60">
+      <button type="button" onclick="window.switchTab('chat')" id="nav-chat" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60">
         <i data-lucide="message-square" class="w-4 h-4"></i> 학부 통신 채널
       </button>
-      <button onclick="window.switchTab('board')" id="nav-board" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60">
+      <button type="button" onclick="window.switchTab('board')" id="nav-board" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60">
         <i data-lucide="file-text" class="w-4 h-4"></i> 중앙 게시판
       </button>
     </nav>
@@ -118,22 +118,22 @@
 
       <!-- TAB 1: LORE -->
       <section id="tab-lore" class="tab-content space-y-6 max-w-4xl mx-auto">
-        <div class="glass-card p-6 rounded-xl border border-slate-800">
-          <h2 class="text-2xl font-fantasy text-amber-400 font-bold mb-3">왕립 벨루미아 아카데미 세계관</h2>
+        <div class="glass-card p-6 rounded-xl border border-sky-500/20">
+          <h2 class="text-2xl font-fantasy text-sky-400 font-bold mb-3">왕립 벨루미아 아카데미 세계관</h2>
           <p class="text-slate-300 text-sm leading-relaxed mb-4">
             북부의 혹한을 뚫고 설립된 벨루미아 아카데미는 마법, 신학, 검술을 연마하여 대륙의 위협에 맞서는 인재들을 양성하는 최상위 기관입니다.
           </p>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-            <div class="p-4 rounded-lg bg-blue-950/30 border border-blue-800/30">
-              <h3 class="text-blue-400 font-bold text-base mb-1">마법학부</h3>
+            <div class="p-4 rounded-lg bg-blue-950/40 border border-blue-800/40">
+              <h3 class="text-sky-400 font-bold text-base mb-1">마법학부</h3>
               <p class="text-xs text-slate-400">원소 마법, 연금술, 고대 언어 및 아티팩트 해석 전문가 과정</p>
             </div>
-            <div class="p-4 rounded-lg bg-amber-950/30 border border-amber-800/30">
-              <h3 class="text-amber-400 font-bold text-base mb-1">신학부</h3>
+            <div class="p-4 rounded-lg bg-indigo-950/40 border border-indigo-800/40">
+              <h3 class="text-indigo-400 font-bold text-base mb-1">신학부</h3>
               <p class="text-xs text-slate-400">성스러운 정화력, 이성 회복, 축복 및 이단 수사관 양성 과정</p>
             </div>
-            <div class="p-4 rounded-lg bg-rose-950/30 border border-rose-800/30">
-              <h3 class="text-rose-400 font-bold text-base mb-1">검술학부</h3>
+            <div class="p-4 rounded-lg bg-cyan-950/40 border border-cyan-800/40">
+              <h3 class="text-cyan-400 font-bold text-base mb-1">검술학부</h3>
               <p class="text-xs text-slate-400">기사도, 마검술, 전술 토벌 및 실전 방어 검술 과정</p>
             </div>
           </div>
@@ -144,10 +144,10 @@
       <section id="tab-characters" class="tab-content hidden space-y-6">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-fantasy text-amber-400 font-bold">학생 명부</h2>
+            <h2 class="text-xl font-fantasy text-sky-400 font-bold">학생 명부</h2>
             <p class="text-xs text-slate-400">아카데미에 재학 중인 학생 캐릭터 목록입니다.</p>
           </div>
-          <button onclick="window.openCharacterModal()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-lg transition flex items-center gap-1.5">
+          <button type="button" onclick="window.openCharacterModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition flex items-center gap-1.5 shadow-md shadow-blue-600/30">
             <i data-lucide="plus" class="w-4 h-4"></i> 신규 학생 등록
           </button>
         </div>
@@ -159,38 +159,38 @@
 
       <!-- TAB 3: INVESTIGATION & EXPLORATION -->
       <section id="tab-investigate" class="tab-content hidden space-y-6">
-        <div class="glass-card p-6 rounded-xl border border-slate-800">
-          <h2 class="text-xl font-fantasy text-amber-400 font-bold mb-2">아카데미 외곽 및 금지 구역 탐사</h2>
+        <div class="glass-card p-6 rounded-xl border border-sky-500/20">
+          <h2 class="text-xl font-fantasy text-sky-400 font-bold mb-2">아카데미 외곽 및 금지 구역 탐사</h2>
           <p class="text-xs text-slate-400 mb-6">탐사를 진행하면 경험치와 은전을 얻지만, 확률에 따라 부상이나 실종(MISSING) 상태가 될 수 있습니다.</p>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="p-4 rounded-lg bg-slate-900 border border-slate-800 flex flex-col justify-between h-44">
+            <div class="p-4 rounded-lg bg-slate-900 border border-blue-900/40 flex flex-col justify-between h-44">
               <div>
                 <h3 class="font-bold text-slate-200">헬리오스 도서관 지하 서고</h3>
                 <p class="text-xs text-slate-400 mt-1">난이도: 하 | 고대 마도서 조사</p>
               </div>
-              <button onclick="window.startInvestigation('헬리오스 지하 서고')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 font-semibold text-xs rounded transition border border-slate-700">조사 시작</button>
+              <button type="button" onclick="window.startInvestigation('헬리오스 지하 서고')" class="w-full py-2 bg-blue-900/50 hover:bg-blue-800/70 text-sky-300 font-semibold text-xs rounded transition border border-blue-700/50">조사 시작</button>
             </div>
-            <div class="p-4 rounded-lg bg-slate-900 border border-slate-800 flex flex-col justify-between h-44">
+            <div class="p-4 rounded-lg bg-slate-900 border border-blue-900/40 flex flex-col justify-between h-44">
               <div>
                 <h3 class="font-bold text-slate-200">금지된 북부 삼림</h3>
                 <p class="text-xs text-slate-400 mt-1">난이도: 중 | 마수 토벌 및 약초 채집</p>
               </div>
-              <button onclick="window.startInvestigation('금지된 북부 삼림')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 font-semibold text-xs rounded transition border border-slate-700">조사 시작</button>
+              <button type="button" onclick="window.startInvestigation('금지된 북부 삼림')" class="w-full py-2 bg-blue-900/50 hover:bg-blue-800/70 text-sky-300 font-semibold text-xs rounded transition border border-blue-700/50">조사 시작</button>
             </div>
-            <div class="p-4 rounded-lg bg-slate-900 border border-slate-800 flex flex-col justify-between h-44">
+            <div class="p-4 rounded-lg bg-slate-900 border border-blue-900/40 flex flex-col justify-between h-44">
               <div>
                 <h3 class="font-bold text-slate-200">봉인된 혹한의 탑</h3>
                 <p class="text-xs text-slate-400 mt-1">난이도: 상 | 실종 위험 존재</p>
               </div>
-              <button onclick="window.startInvestigation('봉인된 혹한의 탑')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-rose-400 font-semibold text-xs rounded transition border border-slate-700">조사 시작</button>
+              <button type="button" onclick="window.startInvestigation('봉인된 혹한의 탑')" class="w-full py-2 bg-rose-900/50 hover:bg-rose-800/70 text-rose-300 font-semibold text-xs rounded transition border border-rose-700/50">조사 시작</button>
             </div>
           </div>
 
           <!-- 탐사 로그 -->
           <div class="mt-6">
             <h4 class="text-xs font-bold text-slate-400 mb-2">실시간 탐사 & 상태 로그</h4>
-            <div id="investigation-log-box" class="h-32 bg-slate-950 p-3 rounded border border-slate-800 text-xs font-mono text-slate-300 overflow-y-auto space-y-1 custom-scrollbar">
+            <div id="investigation-log-box" class="h-32 bg-slate-950 p-3 rounded border border-blue-900/30 text-xs font-mono text-slate-300 overflow-y-auto space-y-1 custom-scrollbar">
               <p class="text-slate-500">> 아카데미 탐사 시스템이 준비되었습니다.</p>
             </div>
           </div>
@@ -201,32 +201,32 @@
       <section id="tab-chat" class="tab-content hidden flex flex-col h-[calc(100vh-8rem)]">
         <div class="flex items-center justify-between mb-3 shrink-0">
           <div class="flex items-center gap-2">
-            <button onclick="window.switchChatChannel('all')" id="chat-tab-all" class="chat-tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30">전체 채널</button>
-            <button onclick="window.switchChatChannel('magic')" id="chat-tab-magic" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">마법학부</button>
-            <button onclick="window.switchChatChannel('holy')" id="chat-tab-holy" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">신학부</button>
-            <button onclick="window.switchChatChannel('sword')" id="chat-tab-sword" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">검술학부</button>
+            <button type="button" onclick="window.switchChatChannel('all')" id="chat-tab-all" class="chat-tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/30">전체 채널</button>
+            <button type="button" onclick="window.switchChatChannel('magic')" id="chat-tab-magic" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">마법학부</button>
+            <button type="button" onclick="window.switchChatChannel('holy')" id="chat-tab-holy" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">신학부</button>
+            <button type="button" onclick="window.switchChatChannel('sword')" id="chat-tab-sword" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">검술학부</button>
           </div>
           
-          <select id="chat-as-character-select" class="bg-slate-900 border border-slate-700 rounded text-xs px-2 py-1 text-slate-200">
+          <select id="chat-as-character-select" class="bg-slate-900 border border-slate-700 rounded text-xs px-2 py-1 text-slate-200 focus:outline-none focus:border-sky-500">
             <option value="">발언할 캐릭터 선택...</option>
           </select>
         </div>
 
-        <div id="chat-message-container" class="flex-1 glass-card p-4 rounded-xl border border-slate-800 overflow-y-auto space-y-3 custom-scrollbar mb-3">
+        <div id="chat-message-container" class="flex-1 glass-card p-4 rounded-xl border border-sky-500/20 overflow-y-auto space-y-3 custom-scrollbar mb-3">
           <!-- Dynamic Chat Messages -->
         </div>
 
         <form onsubmit="window.handleSendChatMessage(event)" class="flex gap-2 shrink-0">
-          <input type="text" id="chat-input-field" placeholder="메시지를 입력하세요..." required class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
-          <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-sm rounded-lg transition">전송</button>
+          <input type="text" id="chat-input-field" placeholder="메시지를 입력하세요..." required class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-lg transition shadow-md shadow-blue-600/30">전송</button>
         </form>
       </section>
 
       <!-- TAB 5: CENTRAL BOARD -->
       <section id="tab-board" class="tab-content hidden space-y-6">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-fantasy text-amber-400 font-bold">중앙 게시판</h2>
-          <button onclick="window.openPostModal()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-lg transition">새 글 작성</button>
+          <h2 class="text-xl font-fantasy text-sky-400 font-bold">중앙 게시판</h2>
+          <button type="button" onclick="window.openPostModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-blue-600/30">새 글 작성</button>
         </div>
         <div id="board-post-list" class="space-y-3">
           <!-- Dynamic Posts -->
@@ -238,30 +238,30 @@
 
   <!-- MODAL: CHARACTER REGISTRATION -->
   <div id="character-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card w-full max-w-lg p-6 rounded-2xl border border-slate-700 shadow-2xl space-y-4">
+    <div class="glass-card w-full max-w-lg p-6 rounded-2xl border border-sky-500/30 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-lg font-bold text-amber-400 font-fantasy">신규 학생 캐릭터 등록</h3>
-        <button onclick="window.closeCharacterModal()" class="text-slate-400 hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <h3 class="text-lg font-bold text-sky-400 font-fantasy">신규 학생 캐릭터 등록</h3>
+        <button type="button" onclick="window.closeCharacterModal()" class="text-slate-400 hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
       <form onsubmit="window.handleSaveCharacter(event)" class="space-y-3 text-xs">
         <div>
           <label class="block text-slate-400 font-semibold mb-1">캐릭터 이름</label>
-          <input type="text" id="char-name" required placeholder="예: 시리우스" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-500">
+          <input type="text" id="char-name" required placeholder="예: 시리우스" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-slate-400 font-semibold mb-1">소속 가문 / 출신 (자유 입력)</label>
-            <input type="text" id="char-house" placeholder="예: 폰 로엔그린 자작가, 북부 용병단" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-500">
+            <input type="text" id="char-house" placeholder="예: 폰 로엔그린 자작가, 북부 용병단" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
           </div>
           <div>
             <label class="block text-slate-400 font-semibold mb-1">학년 / 신분</label>
-            <input type="text" id="char-rank" placeholder="예: 2학년, 수석 입학생" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-500">
+            <input type="text" id="char-rank" placeholder="예: 2학년, 수석 입학생" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
           </div>
         </div>
         <div>
           <label class="block text-slate-400 font-semibold mb-1">전공 학부</label>
-          <select id="char-faculty" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200">
+          <select id="char-faculty" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
             <option value="마법학부">마법학부</option>
             <option value="신학부">신학부</option>
             <option value="검술학부">검술학부</option>
@@ -270,12 +270,12 @@
         <div>
           <label class="block text-slate-400 font-semibold mb-1">프로필 이미지 (파일 업로드 또는 Image URL)</label>
           <input type="file" id="char-file-input" accept="image/*" class="w-full text-slate-400 mb-1">
-          <input type="url" id="char-image-url" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200">
+          <input type="url" id="char-image-url" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
 
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
           <button type="button" onclick="window.closeCharacterModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded font-semibold">취소</button>
-          <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded">학생 등록 완료</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded shadow-md shadow-blue-600/30">학생 등록 완료</button>
         </div>
       </form>
     </div>
@@ -283,24 +283,24 @@
 
   <!-- MODAL: POST REGISTRATION -->
   <div id="post-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card w-full max-w-lg p-6 rounded-2xl border border-slate-700 space-y-4">
+    <div class="glass-card w-full max-w-lg p-6 rounded-2xl border border-sky-500/30 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-lg font-bold text-amber-400">새 게시글 작성</h3>
-        <button onclick="window.closePostModal()" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <h3 class="text-lg font-bold text-sky-400">새 게시글 작성</h3>
+        <button type="button" onclick="window.closePostModal()" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
       <form onsubmit="window.handleSavePost(event)" class="space-y-3 text-xs">
         <div>
           <label class="block text-slate-400 font-semibold mb-1">제목</label>
-          <input type="text" id="post-title" required class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200">
+          <input type="text" id="post-title" required class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
         <div>
           <label class="block text-slate-400 font-semibold mb-1">내용</label>
-          <textarea id="post-content" rows="4" required class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200"></textarea>
+          <textarea id="post-content" rows="4" required class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="window.closePostModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded">취소</button>
-          <button type="submit" class="px-4 py-2 bg-amber-600 text-slate-950 font-bold rounded">게시하기</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded shadow-md shadow-blue-600/30">게시하기</button>
         </div>
       </form>
     </div>
@@ -321,47 +321,61 @@
     let activeChannel = 'all';
     let currentUser = null;
 
-    // Window Global Registrations
+    // Window Global Functions (Safely exposed before DOM bindings)
     window.switchAuthTab = function(tab) {
+      const loginForm = document.getElementById('auth-login-form');
+      const regForm = document.getElementById('auth-register-form');
+      const tabLogin = document.getElementById('auth-tab-login');
+      const tabReg = document.getElementById('auth-tab-register');
+
       if(tab === 'login') {
-        document.getElementById('auth-login-form').classList.remove('hidden');
-        document.getElementById('auth-register-form').classList.add('hidden');
-        document.getElementById('auth-tab-login').className = "flex-1 py-2 font-semibold text-amber-400 border-b-2 border-amber-400 text-center transition";
-        document.getElementById('auth-tab-register').className = "flex-1 py-2 font-semibold text-slate-400 text-center transition";
+        if(loginForm) loginForm.classList.remove('hidden');
+        if(regForm) regForm.classList.add('hidden');
+        if(tabLogin) tabLogin.className = "flex-1 py-2 font-semibold text-sky-400 border-b-2 border-sky-400 text-center transition";
+        if(tabReg) tabReg.className = "flex-1 py-2 font-semibold text-slate-400 text-center transition";
       } else {
-        document.getElementById('auth-login-form').classList.add('hidden');
-        document.getElementById('auth-register-form').classList.remove('hidden');
-        document.getElementById('auth-tab-login').className = "flex-1 py-2 font-semibold text-slate-400 text-center transition";
-        document.getElementById('auth-tab-register').className = "flex-1 py-2 font-semibold text-amber-400 border-b-2 border-amber-400 text-center transition";
+        if(loginForm) loginForm.classList.add('hidden');
+        if(regForm) regForm.classList.remove('hidden');
+        if(tabLogin) tabLogin.className = "flex-1 py-2 font-semibold text-slate-400 text-center transition";
+        if(tabReg) tabReg.className = "flex-1 py-2 font-semibold text-sky-400 border-b-2 border-sky-400 text-center transition";
       }
     };
 
     window.handleAuthLogin = function(e) {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
+      if(e) e.preventDefault();
+      const emailEl = document.getElementById('login-email');
+      const email = emailEl ? emailEl.value : 'user@bellumia.edu';
       currentUser = { email: email, name: email.split('@')[0] };
-      document.getElementById('current-user-display').textContent = currentUser.name;
-      document.getElementById('auth-portal-modal').classList.add('hidden');
+      const display = document.getElementById('current-user-display');
+      if(display) display.textContent = currentUser.name;
+      const modal = document.getElementById('auth-portal-modal');
+      if(modal) modal.classList.add('hidden');
     };
 
     window.handleAuthRegister = function(e) {
-      e.preventDefault();
-      const name = document.getElementById('reg-name').value;
-      currentUser = { email: document.getElementById('reg-email').value, name: name };
-      document.getElementById('current-user-display').textContent = name;
-      document.getElementById('auth-portal-modal').classList.add('hidden');
+      if(e) e.preventDefault();
+      const nameEl = document.getElementById('reg-name');
+      const emailEl = document.getElementById('reg-email');
+      const name = nameEl ? nameEl.value : '신규 학생';
+      currentUser = { email: emailEl ? emailEl.value : 'new@bellumia.edu', name: name };
+      const display = document.getElementById('current-user-display');
+      if(display) display.textContent = name;
+      const modal = document.getElementById('auth-portal-modal');
+      if(modal) modal.classList.add('hidden');
     };
 
     window.handleLogout = function() {
       currentUser = null;
-      document.getElementById('current-user-display').textContent = '게스트';
-      document.getElementById('auth-portal-modal').classList.remove('hidden');
+      const display = document.getElementById('current-user-display');
+      if(display) display.textContent = '게스트';
+      const modal = document.getElementById('auth-portal-modal');
+      if(modal) modal.classList.remove('hidden');
     };
 
     window.switchTab = function(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('text-amber-400', 'bg-amber-500/10', 'border', 'border-amber-500/20');
+        btn.classList.remove('text-sky-400', 'bg-sky-500/10', 'border', 'border-sky-500/20');
         btn.classList.add('text-slate-400');
       });
 
@@ -370,15 +384,22 @@
       if(targetTab) targetTab.classList.remove('hidden');
       if(targetNav) {
         targetNav.classList.remove('text-slate-400');
-        targetNav.classList.add('text-amber-400', 'bg-amber-500/10', 'border', 'border-amber-500/20');
+        targetNav.classList.add('text-sky-400', 'bg-sky-500/10', 'border', 'border-sky-500/20');
       }
     };
 
-    window.openCharacterModal = function() { document.getElementById('character-modal').classList.remove('hidden'); };
-    window.closeCharacterModal = function() { document.getElementById('character-modal').classList.add('hidden'); };
+    window.openCharacterModal = function() {
+      const modal = document.getElementById('character-modal');
+      if(modal) modal.classList.remove('hidden');
+    };
+    
+    window.closeCharacterModal = function() {
+      const modal = document.getElementById('character-modal');
+      if(modal) modal.classList.add('hidden');
+    };
 
     window.handleSaveCharacter = function(e) {
-      e.preventDefault();
+      if(e) e.preventDefault();
       const name = document.getElementById('char-name').value;
       const house = document.getElementById('char-house').value || '평민 출신';
       const rank = document.getElementById('char-rank').value || '1학년';
@@ -399,7 +420,7 @@
         window.closeCharacterModal();
       };
 
-      if(fileInput.files && fileInput.files[0]) {
+      if(fileInput && fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
         reader.onload = (evt) => createChar(evt.target.result);
         reader.readAsDataURL(fileInput.files[0]);
@@ -412,25 +433,25 @@
       const grid = document.getElementById('character-card-grid');
       if(!grid) return;
       grid.innerHTML = characters.map(c => `
-        <div class="glass-card p-4 rounded-xl border border-slate-800 relative space-y-3">
+        <div class="glass-card p-4 rounded-xl border border-sky-500/20 relative space-y-3">
           <div class="flex gap-3 items-center">
-            <div class="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
-              ${c.image ? `<img src="${c.image}" class="w-full h-full object-cover">` : `<i data-lucide="user" class="w-6 h-6 text-slate-500"></i>`}
+            <div class="w-12 h-12 rounded-lg bg-slate-900 border border-sky-800/50 overflow-hidden flex items-center justify-center shrink-0">
+              ${c.image ? `<img src="${c.image}" class="w-full h-full object-cover">` : `<i data-lucide="user" class="w-6 h-6 text-sky-400/60"></i>`}
             </div>
             <div>
               <h3 class="font-bold text-slate-100 text-sm">${c.name}</h3>
-              <p class="text-xs text-amber-400/90">${c.house} · ${c.rank}</p>
-              <span class="inline-block text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 mt-1">${c.faculty}</span>
+              <p class="text-xs text-sky-400/90">${c.house} · ${c.rank}</p>
+              <span class="inline-block text-[10px] px-1.5 py-0.5 rounded bg-blue-950/80 text-sky-300 border border-blue-800/40 mt-1">${c.faculty}</span>
             </div>
           </div>
-          <div class="grid grid-cols-3 gap-1 text-[11px] bg-slate-950/60 p-2 rounded border border-slate-800 text-center">
+          <div class="grid grid-cols-3 gap-1 text-[11px] bg-slate-950/80 p-2 rounded border border-blue-900/30 text-center">
             <div><span class="text-slate-500 block">생명력</span> <span class="text-rose-400 font-bold">${c.hp}</span></div>
-            <div><span class="text-slate-500 block">마력</span> <span class="text-blue-400 font-bold">${c.mp}</span></div>
+            <div><span class="text-slate-500 block">마력</span> <span class="text-sky-400 font-bold">${c.mp}</span></div>
             <div><span class="text-slate-500 block">이성</span> <span class="text-emerald-400 font-bold">${c.sanity}</span></div>
           </div>
           <div class="flex justify-between items-center text-xs text-slate-400 pt-1">
             <span>상태: <strong class="${c.status === '실종(MISSING)' ? 'text-rose-500 animate-pulse' : 'text-emerald-400'}">${c.status}</strong></span>
-            <span class="text-amber-400 font-mono">${c.gold} Gold</span>
+            <span class="text-sky-300 font-mono">${c.gold} Gold</span>
           </div>
         </div>
       `).join('');
@@ -450,15 +471,17 @@
         b.className = "chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800";
       });
       const activeBtn = document.getElementById('chat-tab-' + channel);
-      if(activeBtn) activeBtn.className = "chat-tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30";
+      if(activeBtn) activeBtn.className = "chat-tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/30";
       window.renderChatMessages();
     };
 
     window.handleSendChatMessage = function(e) {
-      e.preventDefault();
+      if(e) e.preventDefault();
       const input = document.getElementById('chat-input-field');
       const charSelect = document.getElementById('chat-as-character-select');
-      const author = charSelect.value || (currentUser ? currentUser.name : '무명 학생');
+      if(!input) return;
+      
+      const author = (charSelect && charSelect.value) ? charSelect.value : (currentUser ? currentUser.name : '무명 학생');
       const charObj = characters.find(c => c.name === author);
       const faculty = charObj ? charObj.faculty : '일반';
 
@@ -478,9 +501,9 @@
       if(!container) return;
       const filtered = activeChannel === 'all' ? chatMessages : chatMessages.filter(m => m.channel === activeChannel || m.faculty.includes(activeChannel));
       container.innerHTML = filtered.map(m => `
-        <div class="p-2.5 rounded bg-slate-900/60 border border-slate-800/80 space-y-1">
+        <div class="p-2.5 rounded bg-slate-900/80 border border-blue-900/30 space-y-1">
           <div class="flex items-center justify-between text-[11px]">
-            <span class="font-bold text-amber-400">${m.author} <span class="text-slate-500 text-[10px]">(${m.faculty})</span></span>
+            <span class="font-bold text-sky-400">${m.author} <span class="text-slate-500 text-[10px]">(${m.faculty})</span></span>
             <span class="text-slate-500">${m.time}</span>
           </div>
           <p class="text-xs text-slate-200">${m.text}</p>
@@ -491,6 +514,7 @@
 
     window.startInvestigation = function(area) {
       const logBox = document.getElementById('investigation-log-box');
+      if(!logBox) return;
       const rand = Math.random();
       let res = '';
       if(rand > 0.4) {
@@ -502,19 +526,28 @@
         if(characters.length > 0) characters[0].status = '실종(MISSING)';
         window.renderCharacters();
       }
-      logBox.innerHTML += `<p class="text-amber-300/90">> ${res}</p>`;
+      logBox.innerHTML += `<p class="text-sky-300/90">> ${res}</p>`;
       logBox.scrollTop = logBox.scrollHeight;
     };
 
-    window.openPostModal = function() { document.getElementById('post-modal').classList.remove('hidden'); };
-    window.closePostModal = function() { document.getElementById('post-modal').classList.add('hidden'); };
+    window.openPostModal = function() {
+      const modal = document.getElementById('post-modal');
+      if(modal) modal.classList.remove('hidden');
+    };
+    
+    window.closePostModal = function() {
+      const modal = document.getElementById('post-modal');
+      if(modal) modal.classList.add('hidden');
+    };
 
     window.handleSavePost = function(e) {
-      e.preventDefault();
+      if(e) e.preventDefault();
+      const title = document.getElementById('post-title').value;
+      const content = document.getElementById('post-content').value;
       posts.unshift({
         id: Date.now().toString(),
-        title: document.getElementById('post-title').value,
-        content: document.getElementById('post-content').value,
+        title: title,
+        content: content,
         author: currentUser ? currentUser.name : '익명',
         likes: 0
       });
@@ -526,7 +559,7 @@
       const list = document.getElementById('board-post-list');
       if(!list) return;
       list.innerHTML = posts.map(p => `
-        <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-2">
+        <div class="glass-card p-4 rounded-xl border border-sky-500/20 space-y-2">
           <h3 class="font-bold text-slate-100 text-sm">${p.title}</h3>
           <p class="text-xs text-slate-300 leading-relaxed">${p.content}</p>
           <div class="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-800/60">
@@ -537,7 +570,7 @@
       `).join('');
     };
 
-    // DOM Ready Init
+    // DOM Initialization
     document.addEventListener('DOMContentLoaded', () => {
       if(window.lucide) window.lucide.createIcons();
       window.renderCharacters();
