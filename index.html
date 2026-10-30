@@ -17,6 +17,9 @@
 </head>
 <body class="h-screen overflow-hidden flex flex-col bg-slate-950 text-slate-100">
 
+  <!-- BGM AUDIO PLAYER (판타지 아카데미 배경음악) -->
+  <audio id="bgm-player" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=fantasy-orchestral-112893.mp3"></audio>
+
   <!-- AUTH MODAL -->
   <div id="auth-portal-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-md p-6 rounded-2xl border border-sky-500/40 shadow-2xl relative">
@@ -30,7 +33,6 @@
         <button type="button" onclick="window.switchAuthTab('register')" id="auth-tab-register" class="flex-1 py-2 font-semibold text-slate-400 text-center transition">신규 등록</button>
       </div>
 
-      <!-- 로그인 폼 -->
       <form id="auth-login-form" onsubmit="window.handleAuthLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">식별 계정 / 이메일</label>
@@ -43,11 +45,10 @@
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/30">아카데미 접속</button>
       </form>
 
-      <!-- 회원가입 폼 -->
       <form id="auth-register-form" onsubmit="window.handleAuthRegister(event)" class="space-y-4 hidden">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">학생 이름</label>
-          <input type="text" id="reg-name" required placeholder="예: 시리우스 폰 로엔그린" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+          <label class="block text-xs font-semibold text-slate-400 mb-1">학생 이름 (본인 작성자 표기용)</label>
+          <input type="text" id="reg-name" required placeholder="예: 시리우스" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">등록 이메일</label>
@@ -69,10 +70,11 @@
       <span class="text-xs px-2 py-0.5 rounded bg-blue-950 text-sky-300 border border-sky-800/50">Royal Bellumia Academy</span>
     </div>
 
+    <!-- BGM CONTROLLER & USER HEADER -->
     <div class="flex items-center gap-4 text-xs">
-      <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-sky-950/60 text-sky-400 border border-sky-800/40">
-        <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
-        <span>시스템 정상</span>
+      <div class="flex items-center gap-2 bg-slate-950 px-2.5 py-1 rounded-lg border border-sky-900/50">
+        <button type="button" id="bgm-toggle-btn" onclick="window.toggleBGM()" class="text-sky-400 hover:text-sky-200 font-bold">🎵 BGM 재생</button>
+        <input type="range" id="bgm-volume" min="0" max="1" step="0.1" value="0.3" onchange="window.setBGMVolume(this.value)" class="w-16 h-1 bg-slate-700 rounded cursor-pointer accent-sky-400">
       </div>
       <span id="current-user-display" class="text-slate-300 font-semibold">게스트</span>
       <button type="button" onclick="window.handleLogout()" class="text-slate-400 hover:text-rose-400 transition">로그아웃</button>
@@ -86,13 +88,13 @@
         📘 아카데미 가이드
       </button>
       <button type="button" onclick="window.switchTab('characters')" id="nav-characters" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
-        👥 학생 명부 (캐릭터)
+        👥 학생 명부 & 관계도
       </button>
       <button type="button" onclick="window.switchTab('investigate')" id="nav-investigate" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
-        🧩 지역 조사 & 탐사
+        🧩 지역 조사 & 위험 탐사
       </button>
       <button type="button" onclick="window.switchTab('chat')" id="nav-chat" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
-        💬 학부 통신 채널
+        💬 학부 통신 & 개인챗
       </button>
       <button type="button" onclick="window.switchTab('board')" id="nav-board" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
         📜 중앙 게시판
@@ -126,12 +128,12 @@
         </div>
       </section>
 
-      <!-- TAB 2: CHARACTERS -->
+      <!-- TAB 2: CHARACTERS & RELATIONSHIPS -->
       <section id="tab-characters" class="tab-content hidden space-y-6">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-fantasy text-sky-400 font-bold">학생 명부</h2>
-            <p class="text-xs text-slate-400">아카데미 재학생 캐릭터 목록입니다.</p>
+            <h2 class="text-xl font-fantasy text-sky-400 font-bold">학생 명부 & 인연 관계도</h2>
+            <p class="text-xs text-slate-400">내 계정으로 생성한 캐릭터만 '수정' 버튼이 활성화되어 프로필을 고칠 수 있습니다.</p>
           </div>
           <button type="button" onclick="window.openCharacterModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-blue-600/30">
             + 신규 학생 등록
@@ -144,54 +146,62 @@
       <!-- TAB 3: INVESTIGATION -->
       <section id="tab-investigate" class="tab-content hidden space-y-6">
         <div class="glass-card p-6 rounded-xl border border-sky-500/30">
-          <h2 class="text-xl font-fantasy text-sky-400 font-bold mb-2">아카데미 외곽 탐사</h2>
-          <p class="text-xs text-slate-400 mb-6">탐사를 진행하여 아이템과 경험치를 얻으세요.</p>
+          <h2 class="text-xl font-fantasy text-sky-400 font-bold mb-2">아카데미 외곽 위험 탐사</h2>
+          <p class="text-xs text-slate-400 mb-6">위험 구역 탐사 시 높은 확률로 부상 및 실종(MISSING) 상태가 발생합니다.</p>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="p-4 rounded-lg bg-slate-900 border border-sky-900/40 flex flex-col justify-between h-44">
               <div>
                 <h3 class="font-bold text-slate-200 text-sm">헬리오스 도서관 지하 서고</h3>
-                <p class="text-xs text-slate-400 mt-1">난이도: 하</p>
+                <p class="text-xs text-slate-400 mt-1">위험도: ★☆☆ | 실종 확률 5%</p>
               </div>
-              <button type="button" onclick="window.startInvestigation('헬리오스 지하 서고')" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded border border-sky-700/50">조사 시작</button>
+              <button type="button" onclick="window.startInvestigation('헬리오스 지하 서고', 0.05)" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded transition border border-sky-700/50">조사 시작</button>
             </div>
             <div class="p-4 rounded-lg bg-slate-900 border border-sky-900/40 flex flex-col justify-between h-44">
               <div>
                 <h3 class="font-bold text-slate-200 text-sm">금지된 북부 삼림</h3>
-                <p class="text-xs text-slate-400 mt-1">난이도: 중</p>
+                <p class="text-xs text-slate-400 mt-1">위험도: ★★☆ | 실종 확률 15%</p>
               </div>
-              <button type="button" onclick="window.startInvestigation('금지된 북부 삼림')" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded border border-sky-700/50">조사 시작</button>
+              <button type="button" onclick="window.startInvestigation('금지된 북부 삼림', 0.15)" class="w-full py-2 bg-blue-900/60 hover:bg-blue-800 text-sky-300 font-semibold text-xs rounded transition border border-sky-700/50">조사 시작</button>
             </div>
             <div class="p-4 rounded-lg bg-slate-900 border border-sky-900/40 flex flex-col justify-between h-44">
               <div>
-                <h3 class="font-bold text-slate-200 text-sm">봉인된 혹한의 탑</h3>
-                <p class="text-xs text-slate-400 mt-1">난이도: 상 (실종 위험)</p>
+                <h3 class="font-bold text-rose-300 text-sm">봉인된 혹한의 탑 (고위험)</h3>
+                <p class="text-xs text-slate-400 mt-1">위험도: ★★★ | 실종 확률 35%</p>
               </div>
-              <button type="button" onclick="window.startInvestigation('봉인된 혹한의 탑')" class="w-full py-2 bg-rose-950/70 hover:bg-rose-900 text-rose-300 font-semibold text-xs rounded border border-rose-800/50">조사 시작</button>
+              <button type="button" onclick="window.startInvestigation('봉인된 혹한의 탑', 0.35)" class="w-full py-2 bg-rose-950/70 hover:bg-rose-900 text-rose-300 font-semibold text-xs rounded transition border border-rose-800/50">조사 시작</button>
             </div>
           </div>
 
           <div class="mt-6">
             <h4 class="text-xs font-bold text-slate-400 mb-2">실시간 탐사 로그</h4>
-            <div id="investigation-log-box" class="h-32 bg-slate-950 p-3 rounded border border-sky-900/30 text-xs font-mono text-slate-300 overflow-y-auto space-y-1 custom-scrollbar">
-              <p class="text-slate-500">> 탐사 시스템 준비 완료.</p>
+            <div id="investigation-log-box" class="h-36 bg-slate-950 p-3 rounded border border-sky-900/30 text-xs font-mono text-slate-300 overflow-y-auto space-y-1 custom-scrollbar">
+              <p class="text-slate-500">> 아카데미 위험 탐사 시스템 준비 완료.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- TAB 4: CHAT -->
+      <!-- TAB 4: CHAT & PRIVATE DIRECT MESSAGES -->
       <section id="tab-chat" class="tab-content hidden flex flex-col h-[calc(100vh-8rem)]">
         <div class="flex items-center justify-between mb-3 shrink-0">
           <div class="flex items-center gap-2">
-            <button type="button" onclick="window.switchChatChannel('all')" id="chat-tab-all" class="chat-tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/40">전체</button>
+            <button type="button" onclick="window.switchChatChannel('all')" id="chat-tab-all" class="chat-tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/40">전체 채널</button>
             <button type="button" onclick="window.switchChatChannel('마법학부')" id="chat-tab-마법학부" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">마법학부</button>
             <button type="button" onclick="window.switchChatChannel('신학부')" id="chat-tab-신학부" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">신학부</button>
             <button type="button" onclick="window.switchChatChannel('검술학부')" id="chat-tab-검술학부" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">검술학부</button>
+            <button type="button" onclick="window.switchChatChannel('private')" id="chat-tab-private" class="chat-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-indigo-400 border border-slate-800">🔒 1:1 개인 귓속말</button>
           </div>
-          <select id="chat-as-character-select" class="bg-slate-900 border border-slate-700 rounded text-xs px-2 py-1.5 text-slate-200">
-            <option value="">발언 캐릭터 선택...</option>
-          </select>
+          
+          <div class="flex gap-2">
+            <!-- 귓속말 수신자 선택 (개인챗일 때 활성화) -->
+            <select id="chat-dm-target-select" class="hidden bg-slate-900 border border-indigo-700 rounded text-xs px-2 py-1.5 text-indigo-300">
+              <option value="">귓속말 상대 선택...</option>
+            </select>
+            <select id="chat-as-character-select" class="bg-slate-900 border border-slate-700 rounded text-xs px-2 py-1.5 text-slate-200">
+              <option value="">발언 캐릭터 선택...</option>
+            </select>
+          </div>
         </div>
 
         <div id="chat-message-container" class="flex-1 glass-card p-4 rounded-xl border border-sky-500/30 overflow-y-auto space-y-3 custom-scrollbar mb-3"></div>
@@ -214,15 +224,16 @@
     </main>
   </div>
 
-  <!-- CHARACTER MODAL -->
+  <!-- CHARACTER EDIT / REGISTRATION MODAL -->
   <div id="character-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card w-full max-w-lg p-6 rounded-2xl border border-sky-500/40 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-lg font-bold text-sky-400 font-fantasy">신규 학생 캐릭터 등록</h3>
+        <h3 id="char-modal-title" class="text-lg font-bold text-sky-400 font-fantasy">신규 학생 캐릭터 등록</h3>
         <button type="button" onclick="window.closeCharacterModal()" class="text-slate-400 hover:text-slate-200">✕</button>
       </div>
 
       <form onsubmit="window.handleSaveCharacter(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="char-edit-id" value="">
         <div>
           <label class="block text-slate-400 font-semibold mb-1">캐릭터 이름</label>
           <input type="text" id="char-name" required placeholder="예: 시리우스" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
@@ -246,14 +257,47 @@
           </select>
         </div>
         <div>
-          <label class="block text-slate-400 font-semibold mb-1">프로필 이미지 (파일 또는 URL)</label>
+          <label class="block text-slate-400 font-semibold mb-1">프로필 이미지 (파일 교체 또는 URL)</label>
           <input type="file" id="char-file-input" accept="image/*" class="w-full text-slate-400 mb-1">
           <input type="url" id="char-image-url" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
 
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
           <button type="button" onclick="window.closeCharacterModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded font-semibold">취소</button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded shadow-md shadow-blue-600/30">등록 완료</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded shadow-md shadow-blue-600/30">저장 완료</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- RELATIONSHIP MODAL (관계도 설정 모달) -->
+  <div id="relation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card w-full max-w-md p-6 rounded-2xl border border-sky-500/40 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-sky-400">인연 관계 추가/수정</h3>
+        <button type="button" onclick="window.closeRelationModal()" class="text-slate-400">✕</button>
+      </div>
+
+      <form onsubmit="window.handleSaveRelationship(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="rel-from-id" value="">
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">대상 상대 캐릭터</label>
+          <select id="rel-target-id" required class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200">
+            <!-- Dynamic Select -->
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">관계 호칭 (예: 비밀 동맹, 숙명의 라이벌)</label>
+          <input type="text" id="rel-type" required placeholder="예: 라이벌" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200">
+        </div>
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">인연 수치 (1~100)</label>
+          <input type="number" id="rel-value" min="1" max="100" value="50" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200">
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="window.closeRelationModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded">취소</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded">관계 저장</button>
         </div>
       </form>
     </div>
@@ -284,20 +328,38 @@
     </div>
   </div>
 
-  <!-- SCRIPT -->
+  <!-- CORE SCRIPT -->
   <script>
+    var currentUser = null; // 현재 접속 사용자 계정
     var characters = [
-      { id: '1', name: '시리우스 폰 로엔그린', house: '폰 로엔그린 자작가', rank: '2학년 수석', faculty: '마법학부', hp: 100, mp: 120, sanity: 100, status: '정상', gold: 150, image: '' }
+      { id: 'c1', owner: 'student@bellumia.edu', name: '시리우스 폰 로엔그린', house: '폰 로엔그린 자작가', rank: '2학년 수석', faculty: '마법학부', hp: 100, mp: 120, sanity: 100, status: '정상', gold: 150, image: '', relationships: [{ targetName: '엘리아', type: '라이벌', value: 75 }] },
+      { id: 'c2', owner: 'other@bellumia.edu', name: '엘리아 디아나', house: '디아나 백작가', rank: '2학년', faculty: '신학부', hp: 100, mp: 100, sanity: 100, status: '정상', gold: 200, image: '', relationships: [] }
     ];
     var chatMessages = [
-      { id: 'm1', author: '시리우스', faculty: '마법학부', text: '헬리오스 지하 서고 조사를 함께 가실 분 계신가요?', channel: 'all', time: '오전 10:15' }
+      { id: 'm1', author: '시리우스', targetAuthor: '', faculty: '마법학부', text: '헬리오스 지하 서고 조사를 함께 가실 분 계신가요?', channel: 'all', time: '오전 10:15' }
     ];
     var posts = [
       { id: 'p1', title: '금지된 북부 삼림 수사 동행 모집', content: '마수 토벌에 동행할 검술학부 단원을 찾습니다.', author: '시리우스', likes: 3 }
     ];
     var activeChannel = 'all';
-    var currentUser = null;
 
+    // BGM 컨트롤
+    window.toggleBGM = function() {
+      var player = document.getElementById('bgm-player');
+      var btn = document.getElementById('bgm-toggle-btn');
+      if (player.paused) {
+        player.play();
+        btn.textContent = '⏸️ BGM 정지';
+      } else {
+        player.pause();
+        btn.textContent = '🎵 BGM 재생';
+      }
+    };
+    window.setBGMVolume = function(val) {
+      document.getElementById('bgm-player').volume = val;
+    };
+
+    // Auth 기능
     window.switchAuthTab = function(tab) {
       var loginForm = document.getElementById('auth-login-form');
       var regForm = document.getElementById('auth-register-form');
@@ -324,6 +386,7 @@
       currentUser = { email: email, name: email.split('@')[0] };
       document.getElementById('current-user-display').textContent = currentUser.name;
       document.getElementById('auth-portal-modal').classList.add('hidden');
+      window.renderCharacters();
       return false;
     };
 
@@ -332,9 +395,11 @@
       var nameEl = document.getElementById('reg-name');
       var emailEl = document.getElementById('reg-email');
       var name = nameEl && nameEl.value ? nameEl.value : '신규 학생';
-      currentUser = { email: emailEl ? emailEl.value : 'new@bellumia.edu', name: name };
+      var email = emailEl && emailEl.value ? emailEl.value : 'new@bellumia.edu';
+      currentUser = { email: email, name: name };
       document.getElementById('current-user-display').textContent = name;
       document.getElementById('auth-portal-modal').classList.add('hidden');
+      window.renderCharacters();
       return false;
     };
 
@@ -363,11 +428,41 @@
       }
     };
 
-    window.openCharacterModal = function() { document.getElementById('character-modal').classList.remove('hidden'); };
+    // 캐릭터 생성 및 수정 (본인 소유 제어)
+    window.openCharacterModal = function(editId) {
+      var modalTitle = document.getElementById('char-modal-title');
+      var editInput = document.getElementById('char-edit-id');
+      
+      if (editId) {
+        var charObj = null;
+        for(var i=0; i<characters.length; i++) {
+          if(characters[i].id === editId) { charObj = characters[i]; break; }
+        }
+        if(charObj) {
+          modalTitle.textContent = "내 캐릭터 프로필 수정";
+          editInput.value = charObj.id;
+          document.getElementById('char-name').value = charObj.name;
+          document.getElementById('char-house').value = charObj.house;
+          document.getElementById('char-rank').value = charObj.rank;
+          document.getElementById('char-faculty').value = charObj.faculty;
+          document.getElementById('char-image-url').value = charObj.image || '';
+        }
+      } else {
+        modalTitle.textContent = "신규 학생 캐릭터 등록";
+        editInput.value = "";
+        document.getElementById('char-name').value = "";
+        document.getElementById('char-house').value = "";
+        document.getElementById('char-rank').value = "";
+        document.getElementById('char-image-url').value = "";
+      }
+      document.getElementById('character-modal').classList.remove('hidden');
+    };
+
     window.closeCharacterModal = function() { document.getElementById('character-modal').classList.add('hidden'); };
 
     window.handleSaveCharacter = function(e) {
       if(e && e.preventDefault) e.preventDefault();
+      var editId = document.getElementById('char-edit-id').value;
       var name = document.getElementById('char-name').value;
       var house = document.getElementById('char-house').value || '평민 출신';
       var rank = document.getElementById('char-rank').value || '1학년';
@@ -375,14 +470,31 @@
       var fileInput = document.getElementById('char-file-input');
       var urlInput = document.getElementById('char-image-url').value;
 
-      var createChar = function(imgData) {
-        var newChar = {
-          id: Date.now().toString(),
-          name: name, house: house, rank: rank, faculty: faculty,
-          hp: 100, mp: 100, sanity: 100, status: '정상', gold: 100,
-          image: imgData || urlInput || ''
-        };
-        characters.push(newChar);
+      var saveAction = function(imgData) {
+        if(editId) {
+          // 수정
+          for(var i=0; i<characters.length; i++) {
+            if(characters[i].id === editId) {
+              characters[i].name = name;
+              characters[i].house = house;
+              characters[i].rank = rank;
+              characters[i].faculty = faculty;
+              if(imgData || urlInput) characters[i].image = imgData || urlInput;
+              break;
+            }
+          }
+        } else {
+          // 신규 등록 (현재 로그인한 계정을 소유자로 기록)
+          var newChar = {
+            id: 'c_' + Date.now(),
+            owner: currentUser ? currentUser.email : 'guest',
+            name: name, house: house, rank: rank, faculty: faculty,
+            hp: 100, mp: 100, sanity: 100, status: '정상', gold: 100,
+            image: imgData || urlInput || '',
+            relationships: []
+          };
+          characters.push(newChar);
+        }
         window.renderCharacters();
         window.updateChatDropdown();
         window.closeCharacterModal();
@@ -390,35 +502,59 @@
 
       if(fileInput && fileInput.files && fileInput.files[0]) {
         var reader = new FileReader();
-        reader.onload = function(evt) { createChar(evt.target.result); };
+        reader.onload = function(evt) { saveAction(evt.target.result); };
         reader.readAsDataURL(fileInput.files[0]);
       } else {
-        createChar();
+        saveAction();
       }
       return false;
     };
 
+    // 캐릭터 카드 렌더링 (본인 소유 여부에 따른 수정 버튼 분기)
     window.renderCharacters = function() {
       var grid = document.getElementById('character-card-grid');
       if(!grid) return;
       var html = '';
+      var userEmail = currentUser ? currentUser.email : '';
+
       for(var i=0; i<characters.length; i++) {
         var c = characters[i];
+        var isOwner = (userEmail && c.owner === userEmail);
+
+        var relHtml = '';
+        if(c.relationships && c.relationships.length > 0) {
+          for(var r=0; r<c.relationships.length; r++) {
+            var rel = c.relationships[r];
+            relHtml += '<span class="inline-block text-[10px] bg-slate-900 border border-sky-800/60 px-1.5 py-0.5 rounded text-sky-300 mr-1 mt-1">🔗 ' + rel.targetName + ' (' + rel.type + ' ' + rel.value + 'pt)</span>';
+          }
+        } else {
+          relHtml = '<span class="text-[10px] text-slate-500">등록된 인연 없음</span>';
+        }
+
         html += '<div class="glass-card p-4 rounded-xl border border-sky-500/30 relative space-y-3">' +
-          '<div class="flex gap-3 items-center">' +
-            '<div class="w-12 h-12 rounded-lg bg-slate-900 border border-sky-800/60 overflow-hidden flex items-center justify-center shrink-0 text-sky-400 font-bold">' +
-              (c.image ? '<img src="' + c.image + '" class="w-full h-full object-cover">' : '👤') +
+          '<div class="flex gap-3 items-center justify-between">' +
+            '<div class="flex gap-3 items-center">' +
+              '<div class="w-12 h-12 rounded-lg bg-slate-900 border border-sky-800/60 overflow-hidden flex items-center justify-center shrink-0 text-sky-400 font-bold">' +
+                (c.image ? '<img src="' + c.image + '" class="w-full h-full object-cover">' : '👤') +
+              '</div>' +
+              '<div>' +
+                '<h3 class="font-bold text-slate-100 text-sm">' + c.name + '</h3>' +
+                '<p class="text-xs text-sky-400">' + c.house + ' · ' + c.rank + '</p>' +
+                '<span class="inline-block text-[10px] px-1.5 py-0.5 rounded bg-blue-950 text-sky-300 border border-sky-800/40 mt-1">' + c.faculty + '</span>' +
+              '</div>' +
             '</div>' +
-            '<div>' +
-              '<h3 class="font-bold text-slate-100 text-sm">' + c.name + '</h3>' +
-              '<p class="text-xs text-sky-400">' + c.house + ' · ' + c.rank + '</p>' +
-              '<span class="inline-block text-[10px] px-1.5 py-0.5 rounded bg-blue-950 text-sky-300 border border-sky-800/40 mt-1">' + c.faculty + '</span>' +
-            '</div>' +
+            (isOwner ? '<button type="button" onclick="window.openCharacterModal(\'' + c.id + '\')" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-200 text-[11px] rounded border border-sky-700">✏️ 수정</button>' : '') +
           '</div>' +
           '<div class="grid grid-cols-3 gap-1 text-[11px] bg-slate-950 p-2 rounded border border-sky-900/40 text-center">' +
             '<div><span class="text-slate-500 block">생명력</span> <span class="text-rose-400 font-bold">' + c.hp + '</span></div>' +
             '<div><span class="text-slate-500 block">마력</span> <span class="text-sky-400 font-bold">' + c.mp + '</span></div>' +
             '<div><span class="text-slate-500 block">이성</span> <span class="text-emerald-400 font-bold">' + c.sanity + '</span></div>' +
+          '</div>' +
+          '<div class="pt-1 border-t border-slate-800/80">' +
+            '<div class="flex justify-between items-center mb-1"><span class="text-[11px] text-slate-400 font-semibold">인연 관계</span>' +
+            (isOwner ? '<button type="button" onclick="window.openRelationModal(\'' + c.id + '\')" class="text-[10px] text-sky-400 hover:underline">+ 관계추가</button>' : '') +
+            '</div>' +
+            '<div class="flex flex-wrap">' + relHtml + '</div>' +
           '</div>' +
           '<div class="flex justify-between items-center text-xs text-slate-400 pt-1">' +
             '<span>상태: <strong class="' + (c.status === '실종(MISSING)' ? 'text-rose-500 animate-pulse' : 'text-emerald-400') + '">' + c.status + '</strong></span>' +
@@ -429,14 +565,74 @@
       grid.innerHTML = html;
     };
 
+    // 관계도 모달
+    window.openRelationModal = function(fromCharId) {
+      document.getElementById('rel-from-id').value = fromCharId;
+      var select = document.getElementById('rel-target-id');
+      var options = '';
+      for(var i=0; i<characters.length; i++) {
+        if(characters[i].id !== fromCharId) {
+          options += '<option value="' + characters[i].name + '">' + characters[i].name + '</option>';
+        }
+      }
+      select.innerHTML = options || '<option value="">상대 캐릭터 없음</option>';
+      document.getElementById('relation-modal').classList.remove('hidden');
+    };
+    window.closeRelationModal = function() { document.getElementById('relation-modal').classList.add('hidden'); };
+
+    window.handleSaveRelationship = function(e) {
+      if(e && e.preventDefault) e.preventDefault();
+      var fromId = document.getElementById('rel-from-id').value;
+      var targetName = document.getElementById('rel-target-id').value;
+      var relType = document.getElementById('rel-type').value;
+      var relValue = document.getElementById('rel-value').value;
+
+      for(var i=0; i<characters.length; i++) {
+        if(characters[i].id === fromId) {
+          if(!characters[i].relationships) characters[i].relationships = [];
+          characters[i].relationships.push({ targetName: targetName, type: relType, value: relValue });
+          break;
+        }
+      }
+      window.renderCharacters();
+      window.closeRelationModal();
+      return false;
+    };
+
+    // 탐사 기능 (실종 확률 조정)
+    window.startInvestigation = function(area, missingChance) {
+      var logBox = document.getElementById('investigation-log-box');
+      if(!logBox) return;
+      var rand = Math.random();
+      var res = '';
+      
+      if(rand < missingChance) {
+        res = '💥 [위험] ' + area + ' 탐사 도중 정체불명의 고대 기운에 휩싸여 학생 1명이 [실종(MISSING)] 상태가 되었습니다!';
+        if(characters.length > 0) characters[0].status = '실종(MISSING)';
+        window.renderCharacters();
+      } else if(rand < 0.7) {
+        res = '✨ [성공] ' + area + ' 조사를 무사히 마치고 30 Gold와 마법 시약을 채집했습니다.';
+      } else {
+        res = '⚠️ [경고] ' + area + ' 경계 중 마수와 맞닥뜨려 가벼운 부상을 입었습니다. (생명력 -10)';
+      }
+
+      logBox.innerHTML += '<p class="' + (res.includes('위험') ? 'text-rose-400' : 'text-sky-300') + '">> ' + res + '</p>';
+      logBox.scrollTop = logBox.scrollHeight;
+    };
+
+    // 채팅 기능 (학부 채팅 & 1:1 개인 귓속말)
     window.updateChatDropdown = function() {
       var select = document.getElementById('chat-as-character-select');
+      var dmSelect = document.getElementById('chat-dm-target-select');
       if(!select) return;
       var options = '<option value="">발언 캐릭터 선택...</option>';
+      var dmOptions = '<option value="">귓속말 상대 선택...</option>';
       for(var i=0; i<characters.length; i++) {
         options += '<option value="' + characters[i].name + '">' + characters[i].name + ' (' + characters[i].faculty + ')</option>';
+        dmOptions += '<option value="' + characters[i].name + '">' + characters[i].name + '</option>';
       }
       select.innerHTML = options;
+      if(dmSelect) dmSelect.innerHTML = dmOptions;
     };
 
     window.switchChatChannel = function(channel) {
@@ -447,6 +643,13 @@
       }
       var activeBtn = document.getElementById('chat-tab-' + channel);
       if(activeBtn) activeBtn.className = "chat-tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/40";
+      
+      var dmSelect = document.getElementById('chat-dm-target-select');
+      if(channel === 'private') {
+        dmSelect.classList.remove('hidden');
+      } else {
+        dmSelect.classList.add('hidden');
+      }
       window.renderChatMessages();
     };
 
@@ -454,9 +657,12 @@
       if(e && e.preventDefault) e.preventDefault();
       var input = document.getElementById('chat-input-field');
       var charSelect = document.getElementById('chat-as-character-select');
+      var dmSelect = document.getElementById('chat-dm-target-select');
       if(!input) return false;
       
       var author = (charSelect && charSelect.value) ? charSelect.value : (currentUser ? currentUser.name : '무명 학생');
+      var targetAuthor = (activeChannel === 'private' && dmSelect) ? dmSelect.value : '';
+      
       var charObj = null;
       for(var i=0; i<characters.length; i++) {
         if(characters[i].name === author) { charObj = characters[i]; break; }
@@ -465,7 +671,9 @@
 
       chatMessages.push({
         id: Date.now().toString(),
-        author: author, faculty: faculty,
+        author: author,
+        targetAuthor: targetAuthor,
+        faculty: faculty,
         text: input.value,
         channel: activeChannel,
         time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
@@ -481,38 +689,33 @@
       var html = '';
       for(var i=0; i<chatMessages.length; i++) {
         var m = chatMessages[i];
-        if(activeChannel === 'all' || m.channel === 'all' || m.channel === m.faculty || m.faculty === activeChannel) {
-          html += '<div class="p-2.5 rounded bg-slate-900/90 border border-sky-900/40 space-y-1">' +
-            '<div class="flex items-center justify-between text-[11px]">' +
-              '<span class="font-bold text-sky-400">' + m.author + ' <span class="text-slate-500 text-[10px]">(' + m.faculty + ')</span></span>' +
-              '<span class="text-slate-500">' + m.time + '</span>' +
-            '</div>' +
-            '<p class="text-xs text-slate-200">' + m.text + '</p>' +
-          '</div>';
+        if(activeChannel === 'private') {
+          if(m.channel === 'private') {
+            html += '<div class="p-2.5 rounded bg-indigo-950/60 border border-indigo-800/50 space-y-1">' +
+              '<div class="flex items-center justify-between text-[11px]">' +
+                '<span class="font-bold text-indigo-300">🔒 ' + m.author + ' ➔ ' + (m.targetAuthor || '전체') + ' <span class="text-slate-500 text-[10px]">(' + m.faculty + ')</span></span>' +
+                '<span class="text-slate-500">' + m.time + '</span>' +
+              '</div>' +
+              '<p class="text-xs text-indigo-100">' + m.text + '</p>' +
+            '</div>';
+          }
+        } else if(activeChannel === 'all' || m.channel === 'all' || m.channel === m.faculty || m.faculty === activeChannel) {
+          if(m.channel !== 'private') {
+            html += '<div class="p-2.5 rounded bg-slate-900/90 border border-sky-900/40 space-y-1">' +
+              '<div class="flex items-center justify-between text-[11px]">' +
+                '<span class="font-bold text-sky-400">' + m.author + ' <span class="text-slate-500 text-[10px]">(' + m.faculty + ')</span></span>' +
+                '<span class="text-slate-500">' + m.time + '</span>' +
+              '</div>' +
+              '<p class="text-xs text-slate-200">' + m.text + '</p>' +
+            '</div>';
+          }
         }
       }
       container.innerHTML = html;
       container.scrollTop = container.scrollHeight;
     };
 
-    window.startInvestigation = function(area) {
-      var logBox = document.getElementById('investigation-log-box');
-      if(!logBox) return;
-      var rand = Math.random();
-      var res = '';
-      if(rand > 0.4) {
-        res = '[성공] ' + area + ' 탐사를 완료하여 20 Gold와 마법 시약을 획득했습니다.';
-      } else if(rand > 0.1) {
-        res = '[경고] ' + area + ' 탐사 중 함정을 만나 부상을 입었습니다. (생명력 -15)';
-      } else {
-        res = '[위험] ' + area + ' 깊은 곳에서 정체불명의 그림자가 나타나 학생 1명이 [실종(MISSING)] 상태에 빠졌습니다!';
-        if(characters.length > 0) characters[0].status = '실종(MISSING)';
-        window.renderCharacters();
-      }
-      logBox.innerHTML += '<p class="text-sky-300">> ' + res + '</p>';
-      logBox.scrollTop = logBox.scrollHeight;
-    };
-
+    // 게시판 기능
     window.openPostModal = function() { document.getElementById('post-modal').classList.remove('hidden'); };
     window.closePostModal = function() { document.getElementById('post-modal').classList.add('hidden'); };
 
