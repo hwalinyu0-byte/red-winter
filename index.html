@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RED WINTER : 왕립 벨루미아 아카데미 - 캐릭터 귀속 & 삭제 시스템</title>
+  <title>RED WINTER : 왕립 벨루미아 아카데미 - 관리자 모듈 통합판</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Pretendard:wght@300;400;600;700&display=swap');
@@ -25,7 +25,7 @@
     <div class="glass-card w-full max-w-lg p-6 rounded-2xl border border-sky-500/40 shadow-2xl relative">
       <div class="text-center mb-6">
         <h1 class="text-3xl font-fantasy font-bold text-sky-400 tracking-wider">RED WINTER</h1>
-        <p class="text-xs text-sky-300/70 mt-1">계정 접속 및 고유 캐릭터 독점 귀속 관리</p>
+        <p class="text-xs text-sky-300/70 mt-1">계정 접속 및 관리자 코드 인증 포털</p>
       </div>
 
       <div class="flex border-b border-slate-700/60 mb-6">
@@ -33,15 +33,16 @@
         <button type="button" onclick="window.switchAuthTab('register')" id="auth-tab-register" class="flex-1 py-2 font-semibold text-slate-400 text-center transition">신규 등록 + 캐릭터 생성</button>
       </div>
 
-      <!-- 기존 학적 로그인 폼 -->
+      <!-- 로그인 폼 (비밀번호에 운영자 코드 입력 시 관리자 권한 부여) -->
       <form id="auth-login-form" onsubmit="window.handleAuthLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">등록 이메일</label>
-          <input type="email" id="login-email" required placeholder="student@bellumia.edu" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+          <label class="block text-xs font-semibold text-slate-400 mb-1">등록 이메일 또는 'admin'</label>
+          <input type="text" id="login-email" required placeholder="student@bellumia.edu 또는 admin" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">비밀번호</label>
-          <input type="password" id="login-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+          <label class="block text-xs font-semibold text-slate-400 mb-1">비밀번호 (운영자 고유 코드 입력 가능)</label>
+          <input type="password" id="login-password" required placeholder="비밀번호 또는 관리자 코드" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+          <p class="text-[10px] text-sky-400/70 mt-1">💡 운영자 고유 코드: <code class="bg-slate-950 px-1 py-0.5 rounded text-sky-300">REDWINTER_ADMIN_2026</code></p>
         </div>
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/30">아카데미 접속</button>
       </form>
@@ -98,7 +99,7 @@
   <!-- HEADER -->
   <header class="h-14 border-b border-sky-900/40 bg-slate-900/95 px-4 flex items-center justify-between shrink-0">
     <div class="flex items-center gap-3">
-      <h1 class="font-fantasy text-xl font-bold text-sky-400 tracking-wider">RED WINTER</h1>
+      <h1 id="header-title-text" class="font-fantasy text-xl font-bold text-sky-400 tracking-wider">RED WINTER</h1>
       <span class="text-xs px-2 py-0.5 rounded bg-blue-950 text-sky-300 border border-sky-800/50">Royal Bellumia Academy</span>
     </div>
 
@@ -130,16 +131,20 @@
       <button type="button" onclick="window.switchTab('board')" id="nav-board" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
         📜 중앙 게시판
       </button>
+      <!-- 관리자 전용 탭 (관리자 로그인 시에만 노출) -->
+      <button type="button" onclick="window.switchTab('admin')" id="nav-admin" class="nav-btn hidden flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition text-rose-400 bg-rose-950/40 border border-rose-800/50 mt-4">
+        ⚙️ 관리자 제어판
+      </button>
     </nav>
 
     <!-- MAIN VIEW -->
     <main class="flex-1 bg-slate-950 overflow-y-auto custom-scrollbar p-6">
 
-      <!-- TAB 1: LORE -->
+      <!-- TAB 1: LORE (세계관 & 수정 가능 텍스트) -->
       <section id="tab-lore" class="tab-content space-y-6 max-w-4xl mx-auto">
         <div class="glass-card p-6 rounded-xl border border-sky-500/30">
-          <h2 class="text-2xl font-fantasy text-sky-400 font-bold mb-3">왕립 벨루미아 아카데미 세계관</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">
+          <h2 id="lore-title-display" class="text-2xl font-fantasy text-sky-400 font-bold mb-3">왕립 벨루미아 아카데미 세계관</h2>
+          <p id="lore-desc-display" class="text-slate-300 text-sm leading-relaxed mb-4">
             북부의 혹한을 뚫고 설립된 벨루미아 아카데미는 마법, 신학, 검술을 연마하여 대륙의 위협에 맞서는 인재들을 양성하는 최상위 기관입니다.
           </p>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
@@ -164,10 +169,9 @@
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-xl font-fantasy text-sky-400 font-bold">학생 명부 & 고유 캐릭터 관리</h2>
-            <p class="text-xs text-slate-400">내 소유 캐릭터는 직접 [✏️ 수정] 및 [🗑️ 삭제]할 수 있습니다.</p>
+            <p class="text-xs text-slate-400">내 소유 캐릭터는 직접 수정 및 삭제할 수 있습니다.</p>
           </div>
         </div>
-
         <div id="character-card-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </section>
 
@@ -244,6 +248,37 @@
           <button type="button" onclick="window.openPostModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-blue-600/30">새 글 작성</button>
         </div>
         <div id="board-post-list" class="space-y-3"></div>
+      </section>
+
+      <!-- TAB 6: ADMIN CONTROL PANEL (관리자 전용 탭) -->
+      <section id="tab-admin" class="tab-content hidden space-y-6 max-w-4xl mx-auto">
+        <div class="glass-card p-6 rounded-xl border border-rose-500/40 space-y-6">
+          <div class="border-b border-rose-900/50 pb-3">
+            <h2 class="text-xl font-fantasy text-rose-400 font-bold">⚙️ 아카데미 최고 관리자 제어판</h2>
+            <p class="text-xs text-slate-400 mt-0.5">운영자 고유 코드로 인증된 관리자 전용 권한 영역입니다.</p>
+          </div>
+
+          <!-- 1. 텍스트 및 세계관 수정 -->
+          <div class="space-y-3 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+            <h3 class="text-sm font-bold text-sky-300">📜 가이드 & 세계관 텍스트 편집</h3>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">세계관 타이틀 제목</label>
+              <input type="text" id="admin-edit-title" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-slate-200">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">세계관 상세 설명</label>
+              <textarea id="admin-edit-desc" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-slate-200"></textarea>
+            </div>
+            <button type="button" onclick="window.adminSaveLoreText()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded">세계관 텍스트 반영</button>
+          </div>
+
+          <!-- 2. 전체 데이터 삭제 및 초기화 -->
+          <div class="space-y-3 bg-rose-950/20 p-4 rounded-xl border border-rose-900/40">
+            <h3 class="text-sm font-bold text-rose-400">⚠️ 치명적 데이터 제어</h3>
+            <p class="text-xs text-slate-400">모든 유저의 캐릭터, 채팅 내역, 게시판 글을 완전히 초기화합니다. 이 작업은 절대 되돌릴 수 없습니다.</p>
+            <button type="button" onclick="window.adminFactoryReset()" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded shadow">전체 데이터 초기화 (전체 삭제)</button>
+          </div>
+        </div>
       </section>
 
     </main>
@@ -353,11 +388,17 @@
 
   <!-- CORE SCRIPT -->
   <script>
+    var ADMIN_CODE = "REDWINTER_ADMIN_2026";
     var currentUser = null;
 
     var characters = JSON.parse(localStorage.getItem('RW_CHARACTERS')) || [];
     var chatMessages = JSON.parse(localStorage.getItem('RW_CHATS')) || [];
     var posts = JSON.parse(localStorage.getItem('RW_POSTS')) || [];
+    var siteLore = JSON.parse(localStorage.getItem('RW_LORE')) || {
+      title: "왕립 벨루미아 아카데미 세계관",
+      desc: "북부의 혹한을 뚫고 설립된 벨루미아 아카데미는 마법, 신학, 검술을 연마하여 대륙의 위협에 맞서는 인재들을 양성하는 최상위 기관입니다."
+    };
+
     var activeChannel = 'all';
     var activeInvestigationSession = null;
 
@@ -365,6 +406,7 @@
       localStorage.setItem('RW_CHARACTERS', JSON.stringify(characters));
       localStorage.setItem('RW_CHATS', JSON.stringify(chatMessages));
       localStorage.setItem('RW_POSTS', JSON.stringify(posts));
+      localStorage.setItem('RW_LORE', JSON.stringify(siteLore));
     }
 
     window.toggleBGM = function() {
@@ -401,23 +443,34 @@
       }
     };
 
-    // 1. 기존 학적 로그인
+    // 1. 학적 로그인 (관리자 코드 인증 포함)
     window.handleAuthLogin = function(e) {
       if(e && e.preventDefault) e.preventDefault();
-      var emailEl = document.getElementById('login-email');
-      var email = emailEl && emailEl.value ? emailEl.value : 'student@bellumia.edu';
-      
-      var foundChar = null;
-      for(var i=0; i<characters.length; i++) {
-        if(characters[i].owner === email) { foundChar = characters[i]; break; }
+      var email = document.getElementById('login-email').value;
+      var password = document.getElementById('login-password').value;
+
+      var adminNav = document.getElementById('nav-admin');
+
+      // 관리자 인증 확인
+      if (password === ADMIN_CODE || email === 'admin') {
+        currentUser = { email: 'admin@bellumia.edu', name: '👑 최고관리자', isAdmin: true };
+        if(adminNav) adminNav.classList.remove('hidden');
+        alert('👑 최고관리자 권한으로 접속되었습니다.');
+      } else {
+        var foundChar = null;
+        for(var i=0; i<characters.length; i++) {
+          if(characters[i].owner === email) { foundChar = characters[i]; break; }
+        }
+        currentUser = { email: email, name: foundChar ? foundChar.name : email.split('@')[0], isAdmin: false };
+        if(adminNav) adminNav.classList.add('hidden');
       }
 
-      currentUser = { email: email, name: foundChar ? foundChar.name : email.split('@')[0] };
       document.getElementById('current-user-display').textContent = currentUser.name;
       document.getElementById('auth-portal-modal').classList.add('hidden');
       window.renderCharacters();
       window.updateInvestigationDropdown();
       window.updateChatDropdown();
+      window.renderPosts();
       return false;
     };
 
@@ -445,17 +498,18 @@
       characters.push(newChar);
       saveData();
 
-      currentUser = { email: email, name: charName };
+      currentUser = { email: email, name: charName, isAdmin: false };
       document.getElementById('current-user-display').textContent = charName;
       document.getElementById('auth-portal-modal').classList.add('hidden');
       
+      document.getElementById('nav-admin').classList.add('hidden');
       window.renderCharacters();
       window.updateInvestigationDropdown();
       window.updateChatDropdown();
       return false;
     };
 
-    // 3. 로그아웃 기능
+    // 3. 로그아웃
     window.handleLogout = function() {
       currentUser = null;
       document.getElementById('current-user-display').textContent = '게스트';
@@ -464,21 +518,63 @@
       window.updateInvestigationDropdown();
     };
 
-    // 4. 내 고유 캐릭터 직접 삭제 기능
+    // 4. 캐릭터 삭제
     window.deleteCharacter = function(charId) {
       var targetChar = null;
       for(var i=0; i<characters.length; i++) {
         if(characters[i].id === charId) { targetChar = characters[i]; break; }
       }
-
       if(!targetChar) return;
 
-      if(confirm('정말로 [' + targetChar.name + '] 캐릭터를 영구 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+      if(currentUser.isAdmin || confirm('정말로 [' + targetChar.name + '] 캐릭터를 영구 삭제하시겠습니까?')) {
         characters = characters.filter(function(c) { return c.id !== charId; });
         saveData();
         window.renderCharacters();
         window.updateInvestigationDropdown();
         window.updateChatDropdown();
+      }
+    };
+
+    // 5. 관리자 전용 기능: 세계관 텍스트 저장
+    window.adminSaveLoreText = function() {
+      if(!currentUser || !currentUser.isAdmin) { alert('관리자 권한이 없습니다.'); return; }
+      var t = document.getElementById('admin-edit-title').value;
+      var d = document.getElementById('admin-edit-desc').value;
+      if(t) siteLore.title = t;
+      if(d) siteLore.desc = d;
+      saveData();
+      window.applyLoreText();
+      alert('세계관 공지 텍스트가 성공적으로 수정 반영되었습니다.');
+    };
+
+    window.applyLoreText = function() {
+      document.getElementById('lore-title-display').textContent = siteLore.title;
+      document.getElementById('lore-desc-display').textContent = siteLore.desc;
+      document.getElementById('admin-edit-title').value = siteLore.title;
+      document.getElementById('admin-edit-desc').value = siteLore.desc;
+    };
+
+    // 6. 관리자 전용 기능: 전체 데이터 초기화 (전체 삭제)
+    window.adminFactoryReset = function() {
+      if(!currentUser || !currentUser.isAdmin) { alert('관리자 권한이 없습니다.'); return; }
+      if(confirm('⚠️ 경고: 모든 유저의 캐릭터, 채팅, 게시글 데이터가 완전히 삭제됩니다. 진행하시겠습니까?')) {
+        localStorage.clear();
+        characters = [];
+        chatMessages = [];
+        posts = [];
+        saveData();
+        alert('모든 데이터가 초기화되었습니다. 새로고침됩니다.');
+        location.reload();
+      }
+    };
+
+    // 7. 관리자 게시글 삭제
+    window.adminDeletePost = function(postId) {
+      if(!currentUser || !currentUser.isAdmin) return;
+      if(confirm('이 게시글을 관리자 권한으로 삭제하시겠습니까?')) {
+        posts = posts.filter(function(p) { return p.id !== postId; });
+        saveData();
+        window.renderPosts();
       }
     };
 
@@ -488,14 +584,16 @@
       
       var btns = document.querySelectorAll('.nav-btn');
       for(var j=0; j<btns.length; j++) {
-        btns[j].classList.remove('text-sky-400', 'bg-sky-500/15', 'border', 'border-sky-500/30');
-        btns[j].classList.add('text-slate-400');
+        if(btns[j].id !== 'nav-admin') {
+          btns[j].classList.remove('text-sky-400', 'bg-sky-500/15', 'border', 'border-sky-500/30');
+          btns[j].classList.add('text-slate-400');
+        }
       }
 
       var targetTab = document.getElementById('tab-' + tabName);
       var targetNav = document.getElementById('nav-' + tabName);
       if(targetTab) targetTab.classList.remove('hidden');
-      if(targetNav) {
+      if(targetNav && targetNav.id !== 'nav-admin') {
         targetNav.classList.remove('text-slate-400');
         targetNav.classList.add('text-sky-400', 'bg-sky-500/15', 'border', 'border-sky-500/30');
       }
@@ -565,7 +663,6 @@
       return false;
     };
 
-    // 양호실 입원 치료
     window.healCharacter = function(charId) {
       for(var i=0; i<characters.length; i++) {
         if(characters[i].id === charId) {
@@ -591,10 +688,11 @@
 
       var html = '';
       var userEmail = currentUser ? currentUser.email : '';
+      var isAdmin = currentUser ? currentUser.isAdmin : false;
 
       for(var i=0; i<characters.length; i++) {
         var c = characters[i];
-        var isOwner = userEmail && (c.owner === userEmail);
+        var isOwner = isAdmin || (userEmail && (c.owner === userEmail));
 
         var statusColor = 'text-emerald-400';
         if(c.status === '기절(FAINTED)') statusColor = 'text-amber-400 font-bold animate-pulse';
@@ -683,7 +781,6 @@
       return false;
     };
 
-    // 조사 시스템
     window.updateInvestigationDropdown = function() {
       var select = document.getElementById('inv-actor-select');
       if(!select) return;
@@ -835,20 +932,31 @@
       var container = document.getElementById('chat-message-container');
       if(!container) return;
       var html = '';
+      var isAdmin = currentUser && currentUser.isAdmin;
+
       for(var i=0; i<chatMessages.length; i++) {
         var m = chatMessages[i];
+        var deleteBtn = isAdmin ? '<button type="button" onclick="window.adminDeleteChat(\'' + m.id + '\')" class="text-[10px] text-rose-400 hover:underline ml-2">[삭제]</button>' : '';
+
         if(activeChannel === 'private') {
           if(m.channel === 'private') {
-            html += '<div class="p-2.5 rounded bg-indigo-950/60 border border-indigo-800/50 space-y-1"><div class="flex items-center justify-between text-[11px]"><span class="font-bold text-indigo-300">🔒 ' + m.author + ' ➔ ' + (m.targetAuthor || '전체') + '</span><span class="text-slate-500">' + m.time + '</span></div><p class="text-xs text-indigo-100">' + m.text + '</p></div>';
+            html += '<div class="p-2.5 rounded bg-indigo-950/60 border border-indigo-800/50 space-y-1"><div class="flex items-center justify-between text-[11px]"><span class="font-bold text-indigo-300">🔒 ' + m.author + ' ➔ ' + (m.targetAuthor || '전체') + deleteBtn + '</span><span class="text-slate-500">' + m.time + '</span></div><p class="text-xs text-indigo-100">' + m.text + '</p></div>';
           }
         } else if(activeChannel === 'all' || m.channel === 'all' || m.channel === m.faculty || m.faculty === activeChannel) {
           if(m.channel !== 'private') {
-            html += '<div class="p-2.5 rounded bg-slate-900/90 border border-sky-900/40 space-y-1"><div class="flex items-center justify-between text-[11px]"><span class="font-bold text-sky-400">' + m.author + ' <span class="text-slate-500 text-[10px]">(' + m.faculty + ')</span></span><span class="text-slate-500">' + m.time + '</span></div><p class="text-xs text-slate-200">' + m.text + '</p></div>';
+            html += '<div class="p-2.5 rounded bg-slate-900/90 border border-sky-900/40 space-y-1"><div class="flex items-center justify-between text-[11px]"><span class="font-bold text-sky-400">' + m.author + ' <span class="text-slate-500 text-[10px]">(' + m.faculty + ')</span>' + deleteBtn + '</span><span class="text-slate-500">' + m.time + '</span></div><p class="text-xs text-slate-200">' + m.text + '</p></div>';
           }
         }
       }
       container.innerHTML = html;
       container.scrollTop = container.scrollHeight;
+    };
+
+    window.adminDeleteChat = function(chatId) {
+      if(!currentUser || !currentUser.isAdmin) return;
+      chatMessages = chatMessages.filter(function(m) { return m.id !== chatId; });
+      saveData();
+      window.renderChatMessages();
     };
 
     window.openPostModal = function() { document.getElementById('post-modal').classList.remove('hidden'); };
@@ -869,14 +977,26 @@
       var list = document.getElementById('board-post-list');
       if(!list) return;
       var html = '';
+      var isAdmin = currentUser && currentUser.isAdmin;
+
       for(var i=0; i<posts.length; i++) {
         var p = posts[i];
-        html += '<div class="glass-card p-4 rounded-xl border border-sky-500/30 space-y-2"><h3 class="font-bold text-slate-100 text-sm">' + p.title + '</h3><p class="text-xs text-slate-300 leading-relaxed">' + p.content + '</p><div class="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-800"><span>작성자: ' + p.author + '</span><span>추천 ' + p.likes + '</span></div></div>';
+        var adminDelBtn = isAdmin ? '<button type="button" onclick="window.adminDeletePost(\'' + p.id + '\')" class="text-xs text-rose-400 hover:underline">관리자 글 삭제</button>' : '';
+        
+        html += '<div class="glass-card p-4 rounded-xl border border-sky-500/30 space-y-2">' +
+          '<div class="flex justify-between items-center"><h3 class="font-bold text-slate-100 text-sm">' + p.title + '</h3>' + adminDelBtn + '</div>' +
+          '<p class="text-xs text-slate-300 leading-relaxed">' + p.content + '</p>' +
+          '<div class="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-800">' +
+            '<span>작성자: ' + p.author + '</span>' +
+            '<span>추천 ' + p.likes + '</span>' +
+          '</div>' +
+        '</div>';
       }
       list.innerHTML = html;
     };
 
     window.onload = function() {
+      window.applyLoreText();
       window.renderCharacters();
       window.updateChatDropdown();
       window.updateInvestigationDropdown();
