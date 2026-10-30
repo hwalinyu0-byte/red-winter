@@ -184,13 +184,58 @@
                 <span class="text-emerald-400 font-bold">배포 및 DB 연동 상태</span>
             </button>
         </nav>
-
-        <!-- Sidebar Footer Status -->
-        <div class="p-4 border-t border-brand-border bg-brand-bg/50">
-            <div class="flex items-center space-x-2 text-xs text-brand-textMuted">
-                <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i>
-                <span>상태: <strong class="text-emerald-400">Supabase DB 실시간 연동 중</strong></span>
+    <!-- Modal: Add Character -->
+    <div id="char-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-brand-card border border-brand-border rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-brand-border pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i data-lucide="user-plus" class="w-5 h-5 text-brand-cyan"></i>
+                    <span>신규 학생 캐릭터 등록</span>
+                </h3>
+                <button type="button" onclick="closeCharacterModal()" class="text-brand-textMuted hover:text-white"><i data-lucide="x"></i></button>
             </div>
+            <form id="char-form" onsubmit="handleSaveCharacter(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted mb-1">캐릭터 / 학생 성명</label>
+                    <input type="text" id="char-name" required placeholder="예: 시리우스 폰 벨루미아" class="w-full px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted mb-1">학생 프로필 사진 / 초상화 이미지</label>
+                    <div class="space-y-2">
+                        <input type="file" id="char-avatar-file" accept="image/*" onchange="handleAvatarFileSelect(event)" class="w-full text-xs text-brand-textMuted file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-panel file:text-brand-cyan hover:file:bg-brand-border cursor-pointer">
+                        <input type="text" id="char-avatar-url" placeholder="또는 이미지 인터넷 주소(URL) 직접 입력" class="w-full px-3 py-1.5 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                        <input type="hidden" id="char-avatar-data" value="">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted mb-1">소속 가문 / 출신 (직접 입력)</label>
+                    <input type="text" id="char-nation" required placeholder="예: 폰 로엔그린 자작가, 방랑 기사단 출신 등 자유 입력" class="w-full px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-brand-textMuted mb-1">전공 학부</label>
+                        <select id="char-faculty" class="w-full px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                            <option value="마법학부">마법학부</option>
+                            <option value="신학부">신학부</option>
+                            <option value="검술학부">검술학부</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-brand-textMuted mb-1">학년 / 신분</label>
+                        <input type="text" id="char-rank" required placeholder="예: 1학년 / 2학년 / 수석" class="w-full px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted mb-1">학생 프로필 & 약력</label>
+                    <textarea id="char-bio" rows="3" required placeholder="캐릭터의 성격, 특징, 배경 스토리를 기록해 주세요." class="w-full px-3 py-2 rounded-lg bg-brand-bg border border-brand-border text-xs text-white focus:outline-none focus:border-brand-accent"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeCharacterModal()" class="px-4 py-2 rounded-lg bg-brand-panel border border-brand-border text-xs text-white">취소</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-brand-accent hover:bg-brand-hover text-xs font-bold text-white shadow-lg shadow-blue-500/20">학생 등록 완료</button>
+                </div>
+            </form>
+        </div>
+    </div>
             <p class="text-[11px] text-brand-textMuted mt-1">ID: lwomwtpybehqiacuaicz</p>
         </div>
     </aside>
@@ -480,45 +525,198 @@
                         <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
     <!-- Application Script Logic -->
     <script>
-        // Auth Portal Logic
-        // Investigation Logic
-        window.startInvestigation = function(locationName, dangerLevel) {
-            const logs = document.getElementById('investigation-logs');
-            if(!logs) return;
+        // Avatar File Handler
+        window.handleAvatarFileSelect = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                document.getElementById('char-avatar-data').value = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
 
-            const charName = characters.length > 0 ? characters[0].name : "익명 탐사자";
-            let sanityLoss = 10;
-            let resultText = "";
-            let statusEffect = "정상";
+        // Character Modal Logic exposed explicitly to window
+        window.openCharacterModal = function() {
+            const modal = document.getElementById('char-modal');
+            if (modal) modal.classList.remove('hidden');
+        };
 
-            if (dangerLevel === 'safe') {
-                sanityLoss = 5;
-                resultText = `[성공] ${locationName}에서 고대 교단의 비밀 기록 조각을 발견했습니다!`;
-            } else if (dangerLevel === 'warning') {
-                sanityLoss = 15;
-                resultText = `[주의] 시약 안개에 노출되어 정신력이 소모되었습니다. (연금술 시약 획득)`;
-                statusEffect = "마력 폭주 위험";
-            } else if (dangerLevel === 'danger') {
-                sanityLoss = 30;
-                const isMissing = Math.random() < 0.3;
-                if (isMissing) {
-                    resultText = `[경고!] ${charName} 학생이 검은 숲 깊은 곳에서 흔적도 없이 [실종(MISSING)] 되었습니다! 수색대가 필요합니다.`;
-                    statusEffect = "실종 (MISSING)";
-                } else {
-                    resultText = `[위험] 결계 수호 마물과 조우하여 부상을 입고 가까스로 탈출했습니다.`;
-                    statusEffect = "부상";
+        window.closeCharacterModal = function() {
+            const modal = document.getElementById('char-modal');
+            if (modal) modal.classList.add('hidden');
+            const form = document.getElementById('char-form');
+            if (form) form.reset();
+            const avatarData = document.getElementById('char-avatar-data');
+            if (avatarData) avatarData.value = '';
+        };
+
+        window.handleSaveCharacter = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('char-name').value;
+            const nation = document.getElementById('char-nation').value;
+            const faculty = document.getElementById('char-faculty').value;
+            const rank = document.getElementById('char-rank').value;
+            const bio = document.getElementById('char-bio').value;
+
+            const fileAvatar = document.getElementById('char-avatar-data')?.value;
+            const urlAvatar = document.getElementById('char-avatar-url')?.value;
+            const avatar = fileAvatar || urlAvatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`;
+
+            const newChar = {
+                id: Date.now(),
+                name: name,
+                nation: nation,
+                faculty: faculty,
+                rank: rank,
+                bio: bio,
+                avatar: avatar,
+                hp: "100/100",
+                mp: "100/100",
+                satiety: "100/100",
+                injury: "정상",
+                exp: 10,
+                silver: 100
+            };
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('characters').insert([{
+                        name: name,
+                        nation: nation,
+                        faculty: faculty,
+                        rank: rank,
+                        bio: bio
+                    }]);
+                } catch(err) {
+                    console.warn("Supabase insert fallback:", err);
                 }
-            } else {
-                sanityLoss = 10;
-                resultText = `[수련] 연무장에서 신체 강화를 성공적으로 마쳤습니다.`;
             }
 
-            const timeStr = new Date().toLocaleTimeString();
-            const logEntry = document.createElement('div');
-            logEntry.className = statusEffect.includes("실종") ? "text-red-400 font-bold" : "text-amber-300";
-            logEntry.innerText = `[${timeStr}] <${charName}> ${locationName} 탐사 결과 ➔ ${resultText} (상태: ${statusEffect})`;
-            
-            logs.prepend(logEntry);
+            characters.unshift(newChar);
+            localStorage.setItem('rw_characters', JSON.stringify(characters));
+            renderCharacters();
+            closeCharacterModal();
+        };
+
+        window.deleteCharacter = async function(id) {
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('characters').delete().eq('id', id);
+                } catch(err) {
+                    console.warn("Supabase delete error:", err);
+                }
+            }
+            characters = characters.filter(c => c.id !== id);
+            localStorage.setItem('rw_characters', JSON.stringify(characters));
+            renderCharacters();
+        };
+
+        // Post / Community Board Handler Implementation
+        window.renderPosts = function() {
+            const container = document.getElementById('posts-container');
+            if (!container) return;
+
+            if (posts.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-brand-textMuted text-xs">작성된 게시글이 없습니다. [게시글 작성] 버튼을 눌러 소식을 공유해 보세요.</div>`;
+                return;
+            }
+
+            container.innerHTML = posts.map(p => `
+                <div class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-3 shadow-md">
+                    <div class="flex items-center justify-between border-b border-brand-border/60 pb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-7 h-7 rounded-full bg-brand-accent/20 border border-brand-accent flex items-center justify-center text-xs text-brand-cyan font-bold">
+                                ${(p.author || '익명').substring(0, 1)}
+                            </div>
+                            <span class="text-xs font-semibold text-white">${p.author || '익명 학생'}</span>
+                        </div>
+                        <span class="text-[11px] font-mono text-brand-textMuted">${p.created_at ? new Date(p.created_at).toLocaleDateString() : '최근'}</span>
+                    </div>
+                    <h3 class="text-base font-bold text-white">${p.title}</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed">${p.content}</p>
+                    <div class="flex items-center space-x-4 pt-2 border-t border-brand-border/60 text-xs text-brand-textMuted">
+                        <button onclick="likePost(${p.id})" class="flex items-center space-x-1 hover:text-brand-cyan transition-colors">
+                            <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
+                            <span>좋아요 ${p.likes || 0}</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.openPostModal = function() {
+            const modal = document.getElementById('post-modal');
+            if (modal) modal.classList.remove('hidden');
+            if (typeof updateAuthorDropdown === 'function') updateAuthorDropdown();
+        };
+
+        window.closePostModal = function() {
+            const modal = document.getElementById('post-modal');
+            if (modal) modal.classList.add('hidden');
+            const form = document.getElementById('post-form');
+            if (form) form.reset();
+        };
+
+        window.handleSavePost = async function(e) {
+            e.preventDefault();
+            const author = document.getElementById('post-author')?.value || '익명 학생';
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+
+            const newPost = {
+                id: Date.now(),
+                author: author,
+                title: title,
+                content: content,
+                likes: 0,
+                created_at: new Date().toISOString()
+            };
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('posts').insert([{
+                        author: author,
+                        title: title,
+                        content: content
+                    }]);
+                } catch(err) {
+                    console.warn("Supabase post insert error:", err);
+                }
+            }
+
+            posts.unshift(newPost);
+            localStorage.setItem('rw_posts', JSON.stringify(posts));
+            renderPosts();
+            closePostModal();
+        };
+
+        window.likePost = async function(id) {
+            const post = posts.find(p => p.id === id);
+            if (post) {
+                post.likes = (post.likes || 0) + 1;
+                if (supabaseClient) {
+                    try {
+                        await supabaseClient.from('posts').update({ likes: post.likes }).eq('id', id);
+                    } catch(err) {
+                        console.warn("Supabase post update error:", err);
+                    }
+                }
+                localStorage.setItem('rw_posts', JSON.stringify(posts));
+                renderPosts();
+            }
+        };
+
+        window.updateAuthorDropdown = function() {
+            const select = document.getElementById('chat-sender-select');
+            if (!select) return;
+            if (characters.length === 0) {
+                select.innerHTML = `<option value="익명 학생">익명 학생</option>`;
+                return;
+            }
+            select.innerHTML = characters.map(c => `<option value="${c.name}">${c.name} (${c.faculty})</option>`).join('');
         };
 
         // Chat Logic
@@ -646,7 +844,79 @@ CREATE TABLE posts (
         let posts = [];
         let supabaseClient = null;
 
+        // Initialize Supabase Client Safely
+        try {
+            if (window.supabase) {
+                const SUPABASE_URL = 'https://lwomwtpybehqiacuaicz.supabase.co';
+                const SUPABASE_ANON_KEY = 'sb_publishable_qJPSLAYMp-0FDklZa6xing_MKcnJ4Q_';
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch(e) {
+            console.warn("Supabase initialization fallback:", e);
+        }
+
         // Global functions exposed explicitly to window
+        window.selectNation = function(nationKey) {
+            const data = NATION_DATA[nationKey];
+            if (!data) return;
+
+            document.querySelectorAll('.nation-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-accent', 'text-white', 'border-brand-accent');
+                btn.classList.add('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
+            });
+
+            const btn = document.getElementById(`nation-btn-${nationKey}`);
+            if (btn) {
+                btn.classList.add('bg-brand-accent', 'text-white', 'border-brand-accent');
+                btn.classList.remove('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
+            }
+
+            const panel = document.getElementById('nation-detail-panel');
+            if (panel) {
+                panel.innerHTML = `
+                    <div class="flex flex-col sm:flex-row justify-between items-start gap-2 border-b border-brand-border pb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">${data.title}</h3>
+                            <p class="text-xs text-brand-cyan font-mono mt-1">${data.badge}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4 text-xs leading-relaxed">
+                        <div>
+                            <strong class="text-white text-sm block mb-1">국가 개요</strong>
+                            <p class="text-brand-textLight">${data.summary}</p>
+                        </div>
+                        <div>
+                            <strong class="text-white text-sm block mb-1">역사 및 배경</strong>
+                            <p class="text-brand-textMuted">${data.history}</p>
+                        </div>
+                        <div>
+                            <strong class="text-white text-sm block mb-1">사회 문화적 특징</strong>
+                            <p class="text-brand-textMuted">${data.culture}</p>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+        window.switchAuthTab = function(type) {
+            const loginForm = document.getElementById('form-login');
+            const regForm = document.getElementById('form-register');
+            const tabLogin = document.getElementById('tab-auth-login');
+            const tabReg = document.getElementById('tab-auth-register');
+
+            if (type === 'login') {
+                if (loginForm) loginForm.classList.remove('hidden');
+                if (regForm) regForm.classList.add('hidden');
+                if (tabLogin) { tabLogin.classList.add('border-brand-accent', 'text-brand-cyan'); tabLogin.classList.remove('border-transparent', 'text-brand-textMuted'); }
+                if (tabReg) { tabReg.classList.remove('border-brand-accent', 'text-brand-cyan'); tabReg.classList.add('border-transparent', 'text-brand-textMuted'); }
+            } else {
+                if (loginForm) loginForm.classList.add('hidden');
+                if (regForm) regForm.classList.remove('hidden');
+                if (tabReg) { tabReg.classList.add('border-brand-accent', 'text-brand-cyan'); tabReg.classList.remove('border-transparent', 'text-brand-textMuted'); }
+                if (tabLogin) { tabLogin.classList.remove('border-brand-accent', 'text-brand-cyan'); tabLogin.classList.add('border-transparent', 'text-brand-textMuted'); }
+            }
+        };
+
         window.switchTab = function(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             const targetTab = document.getElementById(`tab-${tabId}`);
@@ -664,80 +934,7 @@ CREATE TABLE posts (
             }
         };
 
-        window.selectNation = function(nationKey) {
-            const data = NATION_DATA[nationKey];
-            const panel = document.getElementById('nation-detail-panel');
-            if(!data || !panel) return;
-
-            document.querySelectorAll('.nation-btn').forEach(btn => {
-                btn.classList.remove('bg-brand-accent', 'text-white', 'border-brand-accent');
-                btn.classList.add('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
-            });
-
-            const btn = document.getElementById(`nation-btn-${nationKey}`);
-            if(btn) {
-                btn.classList.add('bg-brand-accent', 'text-white', 'border-brand-accent');
-                btn.classList.remove('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
-            }
-
-            panel.innerHTML = `
-                <div class="flex flex-col sm:flex-row justify-between items-start gap-2 border-b border-brand-border pb-4">
-                    <div>
-                        <h3 class="text-xl font-bold text-white">${data.title}</h3>
-                        <p class="text-xs text-brand-cyan font-mono mt-1">${data.badge}</p>
-                    </div>
-                </div>
-                <div class="space-y-4 text-xs leading-relaxed">
-                    <div>
-                        <strong class="text-white text-sm block mb-1">국가 개요</strong>
-                        <p class="text-brand-textLight">${data.summary}</p>
-                    </div>
-                    <div>
-                        <strong class="text-white text-sm block mb-1">역사 및 배경</strong>
-                        <p class="text-brand-textMuted">${data.history}</p>
-                    </div>
-                    <div>
-                        <strong class="text-white text-sm block mb-1">사회 문화적 특징</strong>
-                        <p class="text-brand-textMuted">${data.culture}</p>
-                    </div>
-                </div>
-            `;
-        };
-
-        // Initialization
-        window.addEventListener('DOMContentLoaded', async () => {
-            if (window.lucide) lucide.createIcons();
-            
-            // Supabase client initialize check
-            if (typeof window.supabase !== 'undefined') {
-                const SUPABASE_URL = 'https://lwomwtpybehqiacuaicz.supabase.co';
-                const SUPABASE_ANON_KEY = 'sb_publishable_qJPSLAYMp-0FDklZa6xing_MKcnJ4Q_';
-                try {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    const statusText = document.getElementById('db-status-text');
-                    if (statusText) statusText.innerText = "Supabase DB 연결 성공 (실시간 연동)";
-                } catch(e) {
-                    console.warn("Supabase Init Fallback:", e);
-                }
-            }
-
-            selectNation('velumia');
-            await fetchCharactersFromDB();
-            await fetchPostsFromDB();
-
-            const mobileBtn = document.getElementById('mobile-menu-btn');
-            if (mobileBtn) {
-                mobileBtn.addEventListener('click', () => {
-                    const sidebar = document.getElementById('sidebar');
-                    if (sidebar) sidebar.classList.toggle('hidden');
-                });
-            }
-
-            if (typeof renderChatMessages === 'function') renderChatMessages();
-            showCodeTab('app_py');
-        });
-
-        // Render Character Cards
+        // Render Character Cards with Complete RPG Stats Display
         window.renderCharacters = function() {
             const grid = document.getElementById('character-list-grid');
             const badgeCount = document.getElementById('char-count-badge');
@@ -745,34 +942,70 @@ CREATE TABLE posts (
             if (!grid) return;
 
             if (characters.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-brand-textMuted text-xs">등록된 학생 캐릭터가 없습니다. 새 캐릭터를 등록해 보세요.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-brand-textMuted text-xs">등록된 학생 캐릭터가 없습니다. [새 캐릭터 등록] 버튼을 눌러 등록하세요.</div>`;
                 return;
             }
 
-            grid.innerHTML = characters.map(c => `
-                <div class="bg-brand-card border border-brand-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-brand-accent/50 transition-all">
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-start">
-                            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-brand-panel text-brand-cyan border border-brand-border">${c.faculty || '일반'}</span>
-                            <button onclick="deleteCharacter(${c.id})" class="text-brand-textMuted hover:text-red-400 text-xs"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            grid.innerHTML = characters.map(c => {
+                const avatarSrc = c.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(c.name)}`;
+                return `
+                <div class="bg-brand-card border border-brand-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-brand-accent/50 transition-all shadow-lg">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start border-b border-brand-border/60 pb-3">
+                            <div class="flex items-center space-x-3">
+                                <img src="${avatarSrc}" alt="${c.name}" class="w-12 h-12 rounded-lg object-cover border border-brand-border bg-brand-panel flex-shrink-0" onerror="this.src='https://placehold.co/100x100/1e293b/60a5fa?text=RW'">
+                                <div>
+                                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-panel text-brand-cyan border border-brand-border">${c.faculty || '학부 미지정'}</span>
+                                    <h3 class="text-base font-bold text-white mt-0.5">${c.name}</h3>
+                                    <p class="text-xs text-brand-cyan font-medium">${c.nation || '가문'} · ${c.rank || '1학년'}</p>
+                                </div>
+                            </div>
+                            <button onclick="deleteCharacter(${c.id})" class="text-brand-textMuted hover:text-red-400 text-xs p-1" title="캐릭터 삭제"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
-                        <h3 class="text-lg font-bold text-white">${c.name}</h3>
-                        <p class="text-xs text-brand-cyan font-medium">${c.nation || '속성 미지정'} · ${c.rank || '학생'}</p>
+
+                        <!-- Fantasy RPG Status Bar -->
+                        <div class="grid grid-cols-3 gap-2 bg-brand-bg/80 p-2.5 rounded-lg border border-brand-border/50 text-[11px] font-mono">
+                            <div>
+                                <span class="text-brand-textMuted block text-[10px]">생명력(HP)</span>
+                                <span class="text-emerald-400 font-bold">${c.hp || "100/100"}</span>
+                            </div>
+                            <div>
+                                <span class="text-brand-textMuted block text-[10px]">마력(MP)</span>
+                                <span class="text-blue-400 font-bold">${c.mp || "100/100"}</span>
+                            </div>
+                            <div>
+                                <span class="text-brand-textMuted block text-[10px]">이성(Sanity)</span>
+                                <span class="text-amber-400 font-bold">${c.satiety || "100/100"} <span class="text-red-400 text-[9px]">${c.injury || ''}</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Stats Currency -->
+                        <div class="flex justify-between text-xs font-mono text-brand-textMuted px-1">
+                            <span>경험치(EXP): <strong class="text-white">${c.exp || 10}</strong></span>
+                            <span>보유 골드: <strong class="text-amber-300">${c.silver || 100} Gold</strong></span>
+                        </div>
+
                         <p class="text-xs text-brand-textMuted leading-relaxed pt-2 border-t border-brand-border/60">${c.bio || '등록된 프로필 내용이 없습니다.'}</p>
                     </div>
+
+                    <button onclick="startInvestigation('${c.name}의 탐사', 'safe')" class="w-full py-2 bg-brand-panel hover:bg-brand-accent text-white text-xs font-bold rounded-lg border border-brand-border transition-all flex items-center justify-center space-x-1">
+                        <i data-lucide="compass" class="w-3.5 h-3.5"></i>
+                        <span>아카데미 수련 & 지역 탐사 개시</span>
+                    </button>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             if (window.lucide) lucide.createIcons();
             if (typeof updateAuthorDropdown === 'function') updateAuthorDropdown();
         };
 
         // Fetch Characters
-        async function fetchCharactersFromDB() {
+        window.fetchCharactersFromDB = async function() {
             if (!supabaseClient) {
                 characters = JSON.parse(localStorage.getItem('rw_characters')) || [
-                    { id: 1, name: "루시안 폰 벨루미아", nation: "벨루미아 왕국", faculty: "검술학부", rank: "3학년", bio: "왕국의 기사 가문 출신.", status: "정상 (Active)" },
-                    { id: 2, name: "엘레노아 아르카눔", nation: "아르카넘 공화국", faculty: "마법학부", rank: "2학년", bio: "원소 마법의 천재.", status: "정상 (Active)" }
+                    { id: 1, name: "시리우스 폰 로엔그린", nation: "폰 로엔그린 자작가", faculty: "검술학부", rank: "2학년 / 수석", bio: "왕립 아카데미 수석 입학생. 왕가 기사단 입단을 목표로 함.", hp: "100/100", mp: "80/100", satiety: "95/100", injury: "정상", exp: 25, silver: 150 },
+                    { id: 2, name: "루시안 폰 벨루미아", nation: "벨루미아 왕가", faculty: "마법학부", rank: "3학년", bio: "원소 마법 및 마학 연구 중.", hp: "100/100", mp: "100/100", satiety: "100/100", injury: "", exp: 20, silver: 200 }
                 ];
                 renderCharacters();
                 return;
@@ -788,13 +1021,13 @@ CREATE TABLE posts (
                 characters = JSON.parse(localStorage.getItem('rw_characters')) || [];
             }
             renderCharacters();
-        }
+        };
 
         // Fetch Posts
-        async function fetchPostsFromDB() {
+        window.fetchPostsFromDB = async function() {
             if (!supabaseClient) {
                 posts = JSON.parse(localStorage.getItem('rw_posts')) || [
-                    { id: 1, author: "루시안 폰 벨루미아", title: "실전 연무장 수련원 모집합니다", content: "검술학부 대련 모임입니다.", likes: 3, created_at: new Date().toISOString() }
+                    { id: 1, author: "모용 허천삼류", title: "회맹 및 토벌전 함께하실 대협 구합니다", content: "현재 수련치 10의 삼류 무인입니다. 함께하실 분 사담 주세요.", likes: 3, created_at: new Date().toISOString() }
                 ];
                 renderPosts();
                 return;
@@ -810,201 +1043,24 @@ CREATE TABLE posts (
                 posts = JSON.parse(localStorage.getItem('rw_posts')) || [];
             }
             renderPosts();
-        }
-
-        // World Tab
-        window.selectNation = function(nationKey) {
-            const data = NATION_DATA[nationKey];
-            const panel = document.getElementById('nation-detail-panel');
-            if(!data || !panel) return;
-
-            document.querySelectorAll('.nation-btn').forEach(btn => {
-                btn.classList.remove('bg-brand-accent', 'text-white', 'border-brand-accent');
-                btn.classList.add('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
-            });
-
-            const btn = document.getElementById(`nation-btn-${nationKey}`);
-            if(btn) {
-                btn.classList.add('bg-brand-accent', 'text-white', 'border-brand-accent');
-                btn.classList.remove('bg-brand-card', 'text-brand-textMuted', 'border-brand-border');
-            }
-
-            panel.innerHTML = `
-                <div class="flex flex-col sm:flex-row justify-between items-start gap-2 border-b border-brand-border pb-4">
-                    <div>
-                        <h3 class="text-xl font-bold text-white">${data.title}</h3>
-                        <p class="text-xs text-brand-cyan font-mono mt-1">${data.badge}</p>
-                    </div>
-                </div>
-                <div class="space-y-4 text-xs leading-relaxed">
-                    <div>
-                        <strong class="text-white text-sm block mb-1">국가 개요</strong>
-                        <p class="text-brand-textLight">${data.summary}</p>
-                    </div>
-                    <div>
-                        <strong class="text-white text-sm block mb-1">역사 및 배경</strong>
-                        <p class="text-brand-textMuted">${data.history}</p>
-                    </div>
-                    <div>
-                        <strong class="text-white text-sm block mb-1">사회 문화적 특징</strong>
-                        <p class="text-brand-textMuted">${data.culture}</p>
-                    </div>
-                </div>
-            `;
         };
 
-        window.openCharacterModal = function() { const m = document.getElementById('char-modal'); if (m) m.classList.remove('hidden'); };
-        window.closeCharacterModal = function() { const m = document.getElementById('char-modal'); if (m) m.classList.add('hidden'); const f = document.getElementById('char-form'); if (f) f.reset(); };
-
-        window.handleSaveCharacter = async function(e) {
-            e.preventDefault();
-            const newChar = {
-                name: document.getElementById('char-name').value,
-                nation: document.getElementById('char-nation').value,
-                faculty: document.getElementById('char-faculty').value,
-                rank: document.getElementById('char-rank').value,
-                bio: document.getElementById('char-bio').value
-            };
-
-            if (supabaseClient) {
-                await supabaseClient.from('characters').insert([newChar]);
-                await fetchCharactersFromDB();
-            } else {
-                newChar.id = Date.now();
-                characters.unshift(newChar);
-                localStorage.setItem('rw_characters', JSON.stringify(characters));
-                renderCharacters();
-            }
-            closeCharacterModal();
-        };
-
-        window.deleteCharacter = async function(id) {
-            if (supabaseClient) {
-                await supabaseClient.from('characters').delete().eq('id', id);
-                await fetchCharactersFromDB();
-            } else {
-                characters = characters.filter(c => c.id !== id);
-                localStorage.setItem('rw_characters', JSON.stringify(characters));
-                renderCharacters();
-            }
-        };
-
-        // Community Board
-        window.renderPosts = function() {
-            const container = document.getElementById('posts-container');
-            if (!container) return;
-            if (posts.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-brand-textMuted text-xs">작성된 게시글이 없습니다.</div>`;
-                return;
-            }
-
-            container.innerHTML = posts.map(p => `
-                <div class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-7 h-7 rounded-full bg-brand-accent/20 border border-brand-accent flex items-center justify-center text-xs text-brand-cyan font-bold">
-                                ${p.author ? p.author.substring(0, 1) : '학생'}
-                            </div>
-                            <span class="text-xs font-semibold text-white">${p.author}</span>
-                        </div>
-                        <span class="text-[11px] font-mono text-brand-textMuted">${p.created_at ? new Date(p.created_at).toLocaleDateString() : '2026-10-30'}</span>
-                    </div>
-                    <h3 class="text-base font-bold text-white">${p.title}</h3>
-                    <p class="text-xs text-brand-textMuted leading-relaxed">${p.content}</p>
-                    <div class="flex items-center space-x-4 pt-2 border-t border-brand-border text-xs text-brand-textMuted">
-                        <button onclick="likePost(${p.id}, ${p.likes || 0})" class="flex items-center space-x-1 hover:text-brand-cyan">
-                            <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
-                            <span>좋아요 ${p.likes || 0}</span>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-
+        // Global Initialization
+        window.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) lucide.createIcons();
-        };
+            if (typeof window.selectNation === 'function') window.selectNation('velumia');
+            fetchCharactersFromDB();
+            fetchPostsFromDB();
+            renderChatMessages();
 
-        function updateAuthorDropdown() {
-            const select = document.getElementById('post-author');
-            if (!select) return;
-            if(characters.length === 0) {
-                select.innerHTML = `<option value="익명 학생">익명 학생</option>`;
-                return;
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            if (mobileBtn) {
+                mobileBtn.addEventListener('click', () => {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar) sidebar.classList.toggle('hidden');
+                });
             }
-            select.innerHTML = characters.map(c => `<option value="${c.name}">${c.name} (${c.faculty})</option>`).join('');
-        }
-
-        window.openPostModal = function() { updateAuthorDropdown(); const m = document.getElementById('post-modal'); if (m) m.classList.remove('hidden'); };
-        window.closePostModal = function() { const m = document.getElementById('post-modal'); if (m) m.classList.add('hidden'); const f = document.getElementById('post-form'); if (f) f.reset(); };
-
-        window.handleSavePost = async function(e) {
-            e.preventDefault();
-            const newPost = {
-                author: document.getElementById('post-author').value,
-                title: document.getElementById('post-title').value,
-                content: document.getElementById('post-content').value,
-                likes: 0
-            };
-
-            if (supabaseClient) {
-                await supabaseClient.from('posts').insert([newPost]);
-                await fetchPostsFromDB();
-            } else {
-                newPost.id = Date.now();
-                newPost.created_at = new Date().toISOString();
-                posts.unshift(newPost);
-                localStorage.setItem('rw_posts', JSON.stringify(posts));
-                renderPosts();
-            }
-            closePostModal();
-        };
-
-        window.likePost = async function(id, currentLikes) {
-            if (supabaseClient) {
-                await supabaseClient.from('posts').update({ likes: currentLikes + 1 }).eq('id', id);
-                await fetchPostsFromDB();
-            } else {
-                const p = posts.find(post => post.id === id);
-                if(p) {
-                    p.likes = (p.likes || 0) + 1;
-                    localStorage.setItem('rw_posts', JSON.stringify(posts));
-                    renderPosts();
-                }
-            }
-        };
-
-        window.showCodeTab = function(key) {
-            currentCodeKey = key;
-            document.querySelectorAll('.code-tab-btn').forEach(btn => {
-                btn.classList.remove('bg-brand-accent', 'text-white', 'border-brand-accent');
-                btn.classList.add('bg-brand-panel', 'text-brand-textMuted', 'border-brand-border');
-            });
-
-            const activeBtn = document.getElementById(`code-btn-${key}`);
-            if(activeBtn) {
-                activeBtn.classList.add('bg-brand-accent', 'text-white', 'border-brand-accent');
-                activeBtn.classList.remove('bg-brand-panel', 'text-brand-textMuted', 'border-brand-border');
-            }
-
-            const disp = document.getElementById('code-display');
-            if (disp && CODE_FILES[key]) disp.innerText = CODE_FILES[key];
-        };
-
-        window.copyCurrentCode = function() {
-            const codeText = CODE_FILES[currentCodeKey];
-            if (!codeText) return;
-            const textArea = document.createElement("textarea");
-            textArea.value = codeText;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textArea);
-
-            const label = document.getElementById('copy-text');
-            if (label) {
-                label.innerText = "복사 완료!";
-                setTimeout(() => { label.innerText = "코드 복사"; }, 2000);
-            }
-        };
+        });
     </script>
 </body>
 </html>
